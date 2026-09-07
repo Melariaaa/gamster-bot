@@ -38,6 +38,187 @@ body {
 
 
 /* =========================================
+   NEIGE EN ARRIÈRE-PLAN
+========================================= */
+
+.snow-background {
+    position: fixed;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    pointer-events: none;
+
+    z-index: 1;
+}
+
+
+.snow-layer {
+    position: absolute;
+
+    top: -120px;
+    left: 0;
+
+    width: 100%;
+    height: calc(100% + 120px);
+
+    pointer-events: none;
+
+    background-repeat: repeat;
+
+    will-change: transform;
+}
+
+
+/* =========================================
+   PETITS FLOCONS
+========================================= */
+
+.snow-layer-1 {
+
+    opacity: 0.45;
+
+    background-image:
+        radial-gradient(
+            circle,
+            rgba(255,255,255,0.85) 0 1px,
+            transparent 1.5px
+        );
+
+    background-size:
+        73px 73px;
+
+    animation:
+        snowFallSlow
+        18s linear
+        infinite;
+}
+
+
+/* =========================================
+   FLOCONS MOYENS
+========================================= */
+
+.snow-layer-2 {
+
+    opacity: 0.32;
+
+    background-image:
+        radial-gradient(
+            circle,
+            rgba(255,255,255,0.9) 0 1.8px,
+            transparent 2.5px
+        );
+
+    background-size:
+        113px 113px;
+
+    animation:
+        snowFallMedium
+        13s linear
+        infinite;
+}
+
+
+/* =========================================
+   GROS FLOCONS
+========================================= */
+
+.snow-layer-3 {
+
+    opacity: 0.20;
+
+    background-image:
+        radial-gradient(
+            circle,
+            rgba(255,255,255,0.95) 0 2.5px,
+            transparent 3.5px
+        );
+
+    background-size:
+        167px 167px;
+
+    animation:
+        snowFallFast
+        9s linear
+        infinite;
+}
+
+
+/* =========================================
+   ANIMATION PETITE NEIGE
+========================================= */
+
+@keyframes snowFallSlow {
+
+    0% {
+        transform:
+            translate3d(0, -120px, 0);
+    }
+
+    50% {
+        transform:
+            translate3d(25px, 50vh, 0);
+    }
+
+    100% {
+        transform:
+            translate3d(-20px, 100vh, 0);
+    }
+}
+
+
+/* =========================================
+   ANIMATION NEIGE MOYENNE
+========================================= */
+
+@keyframes snowFallMedium {
+
+    0% {
+        transform:
+            translate3d(0, -120px, 0);
+    }
+
+    50% {
+        transform:
+            translate3d(-35px, 50vh, 0);
+    }
+
+    100% {
+        transform:
+            translate3d(30px, 100vh, 0);
+    }
+}
+
+
+/* =========================================
+   ANIMATION GROS FLOCONS
+========================================= */
+
+@keyframes snowFallFast {
+
+    0% {
+        transform:
+            translate3d(0, -120px, 0);
+    }
+
+    50% {
+        transform:
+            translate3d(45px, 50vh, 0);
+    }
+
+    100% {
+        transform:
+            translate3d(-35px, 100vh, 0);
+    }
+}
+
+
+/* =========================================
    SCROLLBAR
 ========================================= */
 
@@ -63,29 +244,38 @@ body {
 
 
 /* =========================================
-   HEADER
+   HEADER - NOUVELLE BARRE
 ========================================= */
 
 header {
-    height: 75px;
+    height: 76px;
 
     display: flex;
 
     align-items: center;
 
-    justify-content: space-between;
-
-    padding: 0 30px;
+    padding: 0 28px;
 
     background:
-        rgba(15, 17, 23, 0.78);
+        linear-gradient(
+            135deg,
+            rgba(18, 20, 31, 0.96),
+            rgba(13, 15, 24, 0.96)
+        );
 
     border-bottom:
         1px solid
-        rgba(255, 255, 255, 0.07);
+        rgba(255, 255, 255, 0.08);
+
+    box-shadow:
+        0 8px 30px
+        rgba(0, 0, 0, 0.25);
 
     backdrop-filter:
-        blur(20px);
+        blur(14px);
+
+    -webkit-backdrop-filter:
+        blur(14px);
 
     position: sticky;
 
@@ -104,39 +294,42 @@ header {
 
     align-items: center;
 
-    gap: 12px;
+    gap: 13px;
+
+    min-width: 270px;
 }
 
 
-/* =========================================
-   LOGO
-========================================= */
-
 .logo {
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
 
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
-    border-radius: 12px;
+    flex-shrink: 0;
+
+    border-radius: 13px;
 
     background:
         linear-gradient(
             135deg,
-            #5865f2,
-            #7c3aed
+            #6752ff,
+            #8246e8
         );
+
+    color: #ffffff;
 
     font-size: 21px;
 
     font-weight: 800;
 
     box-shadow:
-        0 8px 25px
-        rgba(88, 101, 242, 0.3);
+        0 6px 20px
+        rgba(103, 82, 255, 0.35);
 }
 
 
@@ -144,22 +337,158 @@ header {
    BRAND TEXT
 ========================================= */
 
+.brand-text {
+    display: flex;
+
+    flex-direction: column;
+
+    line-height: 1;
+}
+
+
 .brand h1 {
-    font-size: 20px;
+    font-size: 19px;
 
-    font-weight: 700;
+    font-weight: 800;
 
-    letter-spacing:
-        -0.4px;
+    letter-spacing: -0.3px;
+
+    color: #f5f5f7;
+}
+
+
+.brand h1 span {
+    color: #7954ff;
 }
 
 
 .brand p {
-    margin-top: 3px;
+    margin-top: 6px;
 
+    font-size: 11px;
+
+    color: #858a9b;
+
+    letter-spacing: 0.1px;
+}
+
+
+/* =========================================
+   SÉPARATEUR HEADER
+========================================= */
+
+.topbar-separator {
+    width: 1px;
+
+    height: 34px;
+
+    margin:
+        0 28px;
+
+    flex-shrink: 0;
+
+    background:
+        linear-gradient(
+            to bottom,
+            transparent,
+            rgba(255, 255, 255, 0.15),
+            transparent
+        );
+}
+
+
+/* =========================================
+   BY MELARIA
+========================================= */
+
+.creator {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    flex: 1;
+
+    min-width: 0;
+}
+
+
+.creator-avatar {
+    width: 42px;
+
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(115, 82, 255, 0.25),
+            rgba(71, 53, 150, 0.18)
+        );
+
+    border:
+        1px solid
+        rgba(130, 91, 255, 0.30);
+
+    box-shadow:
+        0 5px 18px
+        rgba(99, 70, 220, 0.18);
+
+    overflow: hidden;
+}
+
+
+.creator-avatar img {
+    width: 34px;
+
+    height: 34px;
+
+    display: block;
+
+    object-fit: contain;
+
+    image-rendering: pixelated;
+}
+
+
+.creator-text {
+    display: flex;
+
+    align-items: baseline;
+
+    gap: 5px;
+
+    white-space: nowrap;
+}
+
+
+.creator-by {
     font-size: 12px;
 
-    color: #8f98aa;
+    color: #777d90;
+}
+
+
+.creator-name {
+    font-size: 14px;
+
+    font-weight: 700;
+
+    color: #9a7cff;
+
+    text-shadow:
+        0 0 18px
+        rgba(130, 90, 255, 0.25);
 }
 
 
@@ -173,6 +502,130 @@ header {
     align-items: center;
 
     gap: 10px;
+
+    flex-shrink: 0;
+}
+
+
+.topbar-button {
+    height: 40px;
+
+    padding:
+        0 16px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    border-radius: 10px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        background 0.18s ease;
+}
+
+
+.topbar-button:hover {
+    transform:
+        translateY(-1px);
+}
+
+
+.topbar-button:active {
+    transform:
+        translateY(0);
+}
+
+
+.button-icon {
+    font-size: 10px;
+}
+
+
+/* =========================================
+   BOUTON LANCER TOUT
+========================================= */
+
+.topbar-button.success {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(24, 157, 91, 0.14),
+            rgba(21, 126, 76, 0.08)
+        );
+
+    border:
+        1px solid
+        rgba(42, 190, 111, 0.32);
+
+    color:
+        #55df98;
+
+    box-shadow:
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.04);
+}
+
+
+.topbar-button.success:hover {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(31, 174, 101, 0.22),
+            rgba(22, 140, 82, 0.13)
+        );
+
+    box-shadow:
+        0 5px 20px
+        rgba(35, 180, 105, 0.12);
+}
+
+
+/* =========================================
+   BOUTON ARRÊTER TOUT
+========================================= */
+
+.topbar-button.danger {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(170, 42, 57, 0.13),
+            rgba(130, 30, 43, 0.08)
+        );
+
+    border:
+        1px solid
+        rgba(219, 67, 83, 0.30);
+
+    color:
+        #f26a78;
+
+    box-shadow:
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.04);
+}
+
+
+.topbar-button.danger:hover {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(192, 48, 65, 0.21),
+            rgba(145, 31, 46, 0.12)
+        );
+
+    box-shadow:
+        0 5px 20px
+        rgba(200, 50, 70, 0.10);
 }
 
 
@@ -358,11 +811,15 @@ main {
 
     padding:
         30px;
+
+    position: relative;
+
+    z-index: 2;
 }
 
 
 /* =========================================
-   TOP BAR
+   TOP BAR MES BOTS
 ========================================= */
 
 .top-bar {
@@ -592,6 +1049,10 @@ main {
 
     background:
         rgba(255,255,255,0.025);
+
+    position: relative;
+
+    z-index: 2;
 }
 
 
@@ -1236,6 +1697,40 @@ main {
             1fr;
     }
 
+
+    .topbar-separator {
+        margin:
+            0 16px;
+    }
+
+
+    .brand {
+        min-width:
+            auto;
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .creator {
+        display:
+            none;
+    }
+
+
+    .topbar-separator {
+        display:
+            none;
+    }
+
+
+    .topbar-button {
+        padding:
+            0 11px;
+    }
+
 }
 
 
@@ -1250,6 +1745,21 @@ main {
     header {
         height:
             65px;
+    }
+
+
+    .brand h1 {
+        font-size:
+            17px;
+    }
+
+
+    .logo {
+        width:
+            40px;
+
+        height:
+            40px;
     }
 
 
@@ -1301,6 +1811,7 @@ main {
     }
 
 }
+
 
 /* =========================================
    ÉCRAN LICENCE
@@ -1548,4 +2059,298 @@ main {
 
     line-height:
         1.5;
+}
+
+
+/* =========================================
+   MISE À JOUR
+========================================= */
+
+.update-notification {
+
+    position: fixed;
+
+    top: 90px;
+
+    right: 25px;
+
+    z-index: 10000;
+
+    width: 360px;
+
+    display: flex;
+
+    gap: 14px;
+
+    padding: 18px;
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(30, 35, 48, 0.98),
+            rgba(15, 18, 25, 0.98)
+        );
+
+    border:
+        1px solid
+        rgba(88, 101, 242, 0.30);
+
+    box-shadow:
+        0 20px 60px
+        rgba(0,0,0,0.45);
+
+    backdrop-filter:
+        blur(20px);
+
+    animation:
+        updateIn
+        0.25s ease;
+}
+
+
+.update-notification.hidden {
+
+    display:
+        none !important;
+}
+
+
+.update-icon {
+
+    width:
+        42px;
+
+    height:
+        42px;
+
+    flex-shrink:
+        0;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        12px;
+
+    background:
+        rgba(88,101,242,0.14);
+
+    border:
+        1px solid
+        rgba(88,101,242,0.22);
+
+    font-size:
+        20px;
+}
+
+
+.update-content {
+
+    flex:
+        1;
+}
+
+
+.update-title {
+
+    font-size:
+        14px;
+
+    font-weight:
+        700;
+
+    margin-bottom:
+        5px;
+}
+
+
+.update-message {
+
+    color:
+        #8f98aa;
+
+    font-size:
+        12px;
+
+    line-height:
+        1.5;
+
+    margin-bottom:
+        12px;
+}
+
+
+.update-buttons {
+
+    display:
+        flex;
+
+    gap:
+        8px;
+
+    align-items:
+        center;
+
+    flex-wrap:
+        wrap;
+}
+
+
+.update-buttons .btn {
+
+    min-height:
+        35px;
+
+    font-size:
+        11px;
+
+    padding:
+        0 11px;
+}
+
+
+.update-progress-container {
+
+    margin-bottom:
+        12px;
+}
+
+
+.update-progress-container.hidden {
+
+    display:
+        none !important;
+}
+
+
+.update-progress-bar {
+
+    width:
+        100%;
+
+    height:
+        6px;
+
+    overflow:
+        hidden;
+
+    border-radius:
+        10px;
+
+    background:
+        rgba(255,255,255,0.08);
+}
+
+
+.update-progress {
+
+    width:
+        0%;
+
+    height:
+        100%;
+
+    border-radius:
+        10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #5865f2,
+            #7c3aed
+        );
+
+    transition:
+        width
+        0.2s ease;
+}
+
+
+.update-progress-text {
+
+    margin-top:
+        5px;
+
+    color:
+        #727c8e;
+
+    font-size:
+        10px;
+
+    text-align:
+        right;
+}
+
+
+@keyframes updateIn {
+
+    from {
+
+        opacity:
+            0;
+
+        transform:
+            translateY(-10px)
+            translateX(10px);
+    }
+
+    to {
+
+        opacity:
+            1;
+
+        transform:
+            translateY(0)
+            translateX(0);
+    }
+}
+
+
+/* =========================================
+   RESPONSIVE MISE À JOUR
+========================================= */
+
+@media (max-width: 500px) {
+
+    .update-notification {
+
+        top:
+            75px;
+
+        right:
+            15px;
+
+        left:
+            15px;
+
+        width:
+            auto;
+    }
+
+}
+
+
+/* =========================================
+   INTERFACE AU-DESSUS DE LA NEIGE
+========================================= */
+
+header {
+    position: sticky;
+
+    z-index: 20;
+}
+
+
+main {
+    position: relative;
+
+    z-index: 2;
 }

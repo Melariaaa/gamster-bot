@@ -5,43 +5,113 @@ contextBridge.exposeInMainWorld(
     'electronAPI',
     {
 
-// =======================================
-// LICENCE
-// =======================================
+        // =======================================
+        // LICENCE
+        // =======================================
 
-licenseStatus: () =>
-    ipcRenderer.invoke(
-        'license-status'
-    ),
+        licenseStatus: () =>
+            ipcRenderer.invoke(
+                'license-status'
+            ),
 
 
-activateLicense: (licenseKey) =>
-    ipcRenderer.invoke(
-        'activate-license',
-        licenseKey
-    ),
+        activateLicense: (licenseKey) =>
+            ipcRenderer.invoke(
+                'activate-license',
+                licenseKey
+            ),
 
-onLicenseInvalid: (callback) => {
-    ipcRenderer.on(
-        'license-invalid',
-        (event, data) => {
-            callback(data)
-        }
-    )
-},
+
+        onLicenseInvalid: (callback) => {
+
+            ipcRenderer.on(
+                'license-invalid',
+                (event, data) => {
+
+                    callback(data)
+
+                }
+            )
+
+        },
+
+
+        // =======================================
+        // MISE À JOUR
+        // =======================================
+
+        onUpdateAvailable: (callback) => {
+
+            ipcRenderer.on(
+                'update-available',
+                (event, data) => {
+
+                    callback(data)
+
+                }
+            )
+
+        },
+
+
+        onUpdateProgress: (callback) => {
+
+            ipcRenderer.on(
+                'update-progress',
+                (event, data) => {
+
+                    callback(data)
+
+                }
+            )
+
+        },
+
+
+        onUpdateDownloaded: (callback) => {
+
+            ipcRenderer.on(
+                'update-downloaded',
+                (event, data) => {
+
+                    callback(data)
+
+                }
+            )
+
+        },
+
+
+        onUpdateError: (callback) => {
+
+            ipcRenderer.on(
+                'update-error',
+                (event, data) => {
+
+                    callback(data)
+
+                }
+            )
+
+        },
+
+
+        installUpdate: () =>
+            ipcRenderer.invoke(
+                'install-update'
+            ),
+
 
         // =======================================
         // BOTS
         // =======================================
 
-        // Récupérer tous les bots
         getBots: () =>
             ipcRenderer.invoke(
                 'get-bots'
             ),
 
 
-        // Ajouter un bot
         addBot: (bot) =>
             ipcRenderer.invoke(
                 'add-bot',
@@ -49,7 +119,6 @@ onLicenseInvalid: (callback) => {
             ),
 
 
-        // Modifier un bot
         updateBot: (id, bot) =>
             ipcRenderer.invoke(
                 'update-bot',
@@ -60,7 +129,6 @@ onLicenseInvalid: (callback) => {
             ),
 
 
-        // Supprimer un bot
         deleteBot: (id) =>
             ipcRenderer.invoke(
                 'delete-bot',
@@ -72,7 +140,6 @@ onLicenseInvalid: (callback) => {
         // LANCEMENT / ARRÊT
         // =======================================
 
-        // Lancer un bot
         startBot: (bot) =>
             ipcRenderer.invoke(
                 'start-bot',
@@ -80,7 +147,6 @@ onLicenseInvalid: (callback) => {
             ),
 
 
-        // Arrêter un bot
         stopBot: (id) =>
             ipcRenderer.invoke(
                 'stop-bot',
@@ -88,14 +154,12 @@ onLicenseInvalid: (callback) => {
             ),
 
 
-        // Lancer tous les bots
         startAll: () =>
             ipcRenderer.invoke(
                 'start-all'
             ),
 
 
-        // Arrêter tous les bots
         stopAll: () =>
             ipcRenderer.invoke(
                 'stop-all'
@@ -106,7 +170,6 @@ onLicenseInvalid: (callback) => {
         // ÉVÉNEMENTS
         // =======================================
 
-        // Mise à jour d'un bot
         onBotUpdate: (callback) => {
 
             ipcRenderer.on(
@@ -117,10 +180,10 @@ onLicenseInvalid: (callback) => {
 
                 }
             )
+
         },
 
 
-        // Logs des bots
         onBotLog: (callback) => {
 
             ipcRenderer.on(
@@ -131,10 +194,14 @@ onLicenseInvalid: (callback) => {
 
                 }
             )
+
         },
 
 
-        // Retirer les événements
+        // =======================================
+        // RETIRER LES ÉVÉNEMENTS
+        // =======================================
+
         removeBotUpdateListener: () => {
 
             ipcRenderer.removeAllListeners(

@@ -72,12 +72,20 @@ async function loadBots() {
 
     try {
 
-        bots =
+        const result =
             await window.electronAPI.getBots()
 
-        if (!Array.isArray(bots)) {
+
+        if (Array.isArray(result)) {
+
+            bots = result
+
+        } else {
+
             bots = []
+
         }
+
 
         render()
 
@@ -280,7 +288,9 @@ function getStatus(status) {
 function getTime(state) {
 
     if (!state.startTime) {
+
         return '00:00:00'
+
     }
 
 
@@ -354,7 +364,9 @@ setInterval(() => {
             !state ||
             !state.startTime
         ) {
+
             return
+
         }
 
 
@@ -489,10 +501,19 @@ document.getElementById(
 
     try {
 
-        bots =
+        const newBot =
             await window.electronAPI.addBot(
                 bot
             )
+
+
+        // Le main.js renvoie un seul bot.
+        // On l'ajoute donc au tableau.
+        if (newBot) {
+
+            bots.push(newBot)
+
+        }
 
 
         closeModal()
@@ -530,6 +551,12 @@ function openSettings(id) {
 
 
     if (!bot) {
+
+        console.error(
+            'Bot introuvable :',
+            id
+        )
+
         return
     }
 
@@ -632,37 +659,74 @@ document.getElementById(
 
 
     if (!bot) {
+
         return
+
     }
 
 
-    bot.proxy = {
+    const updatedBot = {
 
-        enabled:
-            proxyEnabled.checked,
+        ...bot,
 
-        host:
-            proxyHost.value.trim(),
+        proxy: {
 
-        port:
-            parseInt(
-                proxyPort.value
-            ) || 1080,
+            enabled:
+                proxyEnabled.checked,
 
-        username:
-            proxyUsername.value.trim(),
+            host:
+                proxyHost.value.trim(),
 
-        password:
-            proxyPassword.value
+            port:
+                parseInt(
+                    proxyPort.value
+                ) || 1080,
+
+            username:
+                proxyUsername.value.trim(),
+
+            password:
+                proxyPassword.value
+        }
+
     }
 
 
     try {
 
-        bots =
+        const result =
             await window.electronAPI.updateBot(
-                bot
+                bot.id,
+                updatedBot
             )
+
+
+        if (
+            !result ||
+            !result.success
+        ) {
+
+            throw new Error(
+                'La sauvegarde du bot a échoué.'
+            )
+
+        }
+
+
+        // Remplace le bot dans le tableau
+        const index =
+            bots.findIndex(
+                b => b.id === bot.id
+            )
+
+
+        if (index !== -1) {
+
+            bots[index] =
+                result.bot ||
+                updatedBot
+
+        }
 
 
         closeSettings()
@@ -696,7 +760,9 @@ function openDeleteConfirm(id) {
 
 
     if (!bot) {
+
         return
+
     }
 
 
@@ -745,7 +811,9 @@ cancelDelete.onclick =
 confirmDelete.onclick = async () => {
 
     if (!botToDeleteId) {
+
         return
+
     }
 
 
@@ -767,18 +835,41 @@ confirmDelete.onclick = async () => {
         console.log(
             'Le bot était peut-être déjà arrêté.'
         )
+
     }
 
 
     try {
 
-        bots =
+        const result =
             await window.electronAPI.deleteBot(
                 id
             )
 
 
+        if (
+            !result ||
+            !result.success
+        ) {
+
+            throw new Error(
+                'La suppression a échoué.'
+            )
+
+        }
+
+
+        // Supprime le bot du tableau local
+        bots =
+            bots.filter(
+                bot =>
+                    bot.id !== id
+            )
+
+
+        // Supprime également son état
         delete states[id]
+
 
         render()
 
@@ -817,21 +908,41 @@ async function startBot(id) {
 
 
     if (!bot) {
+
         return
+
     }
 
 
     try {
 
-        await window.electronAPI.startBot(
-            bot
-        )
+        const result =
+            await window.electronAPI.startBot(
+                bot
+            )
+
+
+        if (
+            result &&
+            !result.success
+        ) {
+
+            alert(
+                result.error ||
+                'Impossible de démarrer le bot.'
+            )
+
+        }
 
     } catch (error) {
 
         console.error(
             'Erreur démarrage bot :',
             error
+        )
+
+        alert(
+            'Impossible de démarrer le bot.'
         )
     }
 }
@@ -849,15 +960,33 @@ async function stopBot(id) {
 
     try {
 
-        await window.electronAPI.stopBot(
-            id
-        )
+        const result =
+            await window.electronAPI.stopBot(
+                id
+            )
+
+
+        if (
+            result &&
+            !result.success
+        ) {
+
+            alert(
+                result.error ||
+                'Impossible d’arrêter le bot.'
+            )
+
+        }
 
     } catch (error) {
 
         console.error(
             'Erreur arrêt bot :',
             error
+        )
+
+        alert(
+            'Impossible d’arrêter le bot.'
         )
     }
 }
@@ -877,13 +1006,31 @@ document.getElementById(
 
     try {
 
-        await window.electronAPI.startAll()
+        const result =
+            await window.electronAPI.startAll()
+
+
+        if (
+            result &&
+            !result.success
+        ) {
+
+            alert(
+                result.error ||
+                'Impossible de lancer les bots.'
+            )
+
+        }
 
     } catch (error) {
 
         console.error(
             'Erreur lancement de tous les bots :',
             error
+        )
+
+        alert(
+            'Impossible de lancer les bots.'
         )
     }
 }
@@ -899,13 +1046,31 @@ document.getElementById(
 
     try {
 
-        await window.electronAPI.stopAll()
+        const result =
+            await window.electronAPI.stopAll()
+
+
+        if (
+            result &&
+            !result.success
+        ) {
+
+            alert(
+                result.error ||
+                'Impossible d’arrêter les bots.'
+            )
+
+        }
 
     } catch (error) {
 
         console.error(
             'Erreur arrêt de tous les bots :',
             error
+        )
+
+        alert(
+            'Impossible d’arrêter les bots.'
         )
     }
 }
@@ -917,6 +1082,13 @@ document.getElementById(
 
 window.electronAPI.onBotUpdate(
     data => {
+
+        if (!data || !data.id) {
+
+            return
+
+        }
+
 
         states[data.id] = {
 
@@ -940,6 +1112,13 @@ window.electronAPI.onBotUpdate(
 window.electronAPI.onBotLog(
     data => {
 
+        if (!data) {
+
+            return
+
+        }
+
+
         console.log(
             `[BOT ${data.id}] ${data.message}`
         )
@@ -958,8 +1137,10 @@ function escapeHtml(text) {
             'div'
         )
 
+
     div.textContent =
         text
+
 
     return div.innerHTML
 }

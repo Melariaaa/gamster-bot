@@ -2,7 +2,8 @@ const {
     app,
     BrowserWindow,
     ipcMain,
-    net
+    net,
+    Menu
 } = require('electron')
 
 const {
@@ -20,60 +21,43 @@ const storage =
 const license =
     require('./src/license')
 
-
-
 let mainWindow
 let botManager
 
-
-
-// =======================================
-// CONFIGURATION LICENCE
-// =======================================
+// =========================================
+// LICENCE
+// =========================================
 
 const LICENSE_API_URL =
     'https://nycthxaqrfzgcgtsspap.supabase.co/functions/v1/activate-license'
 
-
-
-// Vérification automatique toutes les 30 minutes
 const LICENSE_CHECK_INTERVAL =
     30 * 60 * 1000
 
+// =========================================
+// MISE À JOUR
+// =========================================
 
-
-// =======================================
-// CONFIGURATION MISE À JOUR
-// =======================================
-
-// Vérification des mises à jour
-// 10 secondes après le démarrage
 const UPDATE_CHECK_DELAY =
     10 * 1000
 
-
-
-// =======================================
-// CRÉER LA FENÊTRE
-// =======================================
+// =========================================
+// FENÊTRE
+// =========================================
 
 function createWindow() {
 
     mainWindow =
         new BrowserWindow({
-
             width: 1100,
-
             height: 700,
 
             minWidth: 900,
-
             minHeight: 600,
 
             backgroundColor: '#0f1117',
 
             webPreferences: {
-
                 preload:
                     path.join(
                         __dirname,
@@ -81,12 +65,15 @@ function createWindow() {
                     ),
 
                 contextIsolation: true,
-
                 nodeIntegration: false
             }
         })
 
+    // =====================================
+    // SUPPRIMER LE MENU ELECTRON
+    // =====================================
 
+    Menu.setApplicationMenu(null)
 
     mainWindow.loadFile(
         path.join(
@@ -96,7 +83,9 @@ function createWindow() {
         )
     )
 
-
+    // =====================================
+    // BOT MANAGER
+    // =====================================
 
     botManager =
         new BotManager(
@@ -111,25 +100,19 @@ function createWindow() {
                         event,
                         data
                     )
+
                 }
+
             }
         )
+
 }
 
-
-
-// =======================================
-// MISE À JOUR AUTOMATIQUE
-// =======================================
+// =========================================
+// AUTO-UPDATER
+// =========================================
 
 function setupAutoUpdater() {
-
-    // Ne pas vérifier les mises à jour
-    // lorsque l'application est lancée
-    // directement avec "npm start".
-    //
-    // Les mises à jour sont destinées
-    // à la version installée / distribuée.
 
     if (!app.isPackaged) {
 
@@ -138,13 +121,12 @@ function setupAutoUpdater() {
         )
 
         return
+
     }
 
-
-
-    // ===================================
-    // NOUVELLE VERSION DISPONIBLE
-    // ===================================
+    // =====================================
+    // MISE À JOUR DISPONIBLE
+    // =====================================
 
     autoUpdater.on(
         'update-available',
@@ -154,8 +136,6 @@ function setupAutoUpdater() {
                 'Nouvelle mise à jour disponible :',
                 info.version
             )
-
-
 
             if (
                 mainWindow &&
@@ -169,15 +149,15 @@ function setupAutoUpdater() {
                             info.version
                     }
                 )
+
             }
+
         }
     )
 
-
-
-    // ===================================
+    // =====================================
     // AUCUNE MISE À JOUR
-    // ===================================
+    // =====================================
 
     autoUpdater.on(
         'update-not-available',
@@ -187,14 +167,13 @@ function setupAutoUpdater() {
                 'Gamster Bot est à jour.',
                 info.version
             )
+
         }
     )
 
-
-
-    // ===================================
-    // PROGRESSION DU TÉLÉCHARGEMENT
-    // ===================================
+    // =====================================
+    // PROGRESSION
+    // =====================================
 
     autoUpdater.on(
         'download-progress',
@@ -203,8 +182,6 @@ function setupAutoUpdater() {
             console.log(
                 `Téléchargement mise à jour : ${Math.round(progress.percent)}%`
             )
-
-
 
             if (
                 mainWindow &&
@@ -218,15 +195,15 @@ function setupAutoUpdater() {
                             progress.percent
                     }
                 )
+
             }
+
         }
     )
 
-
-
-    // ===================================
+    // =====================================
     // MISE À JOUR TÉLÉCHARGÉE
-    // ===================================
+    // =====================================
 
     autoUpdater.on(
         'update-downloaded',
@@ -236,8 +213,6 @@ function setupAutoUpdater() {
                 'Mise à jour téléchargée :',
                 info.version
             )
-
-
 
             if (
                 mainWindow &&
@@ -251,15 +226,15 @@ function setupAutoUpdater() {
                             info.version
                     }
                 )
+
             }
+
         }
     )
 
-
-
-    // ===================================
-    // ERREUR DE MISE À JOUR
-    // ===================================
+    // =====================================
+    // ERREUR
+    // =====================================
 
     autoUpdater.on(
         'error',
@@ -269,8 +244,6 @@ function setupAutoUpdater() {
                 'Erreur mise à jour automatique :',
                 error
             )
-
-
 
             if (
                 mainWindow &&
@@ -284,15 +257,15 @@ function setupAutoUpdater() {
                             error.message
                     }
                 )
+
             }
+
         }
     )
 
-
-
-    // ===================================
-    // VÉRIFIER LES MISES À JOUR
-    // ===================================
+    // =====================================
+    // VÉRIFICATION APRÈS 10 SECONDES
+    // =====================================
 
     setTimeout(
         async () => {
@@ -302,8 +275,6 @@ function setupAutoUpdater() {
                 console.log(
                     'Recherche de mises à jour...'
                 )
-
-
 
                 await autoUpdater.checkForUpdates()
 
@@ -317,16 +288,14 @@ function setupAutoUpdater() {
             }
 
         },
-
         UPDATE_CHECK_DELAY
     )
+
 }
 
-
-
-// =======================================
-// INSTALLER LA MISE À JOUR
-// =======================================
+// =========================================
+// INSTALLATION DE LA MISE À JOUR
+// =========================================
 
 ipcMain.handle(
     'install-update',
@@ -336,12 +305,12 @@ ipcMain.handle(
 
             return {
                 success: false,
+
                 error:
                     'Les mises à jour ne sont pas disponibles en mode développement.'
             }
+
         }
-
-
 
         try {
 
@@ -349,8 +318,6 @@ ipcMain.handle(
                 false,
                 true
             )
-
-
 
             return {
                 success: true
@@ -363,179 +330,142 @@ ipcMain.handle(
                 error
             )
 
-
-
             return {
                 success: false,
+
                 error:
                     error.message
             }
+
         }
+
     }
 )
 
+// =========================================
+// LICENCE : ACTIVATION
+// =========================================
 
+ipcMain.handle(
+    'activate-license',
+    async (event, licenseKey) => {
 
-// =======================================
-// ACTIVER UNE LICENCE
-// =======================================
+        try {
 
-async function activateLicense(
-    licenseKey
-) {
+            const deviceId =
+                license.getDeviceId()
 
-    const deviceId =
-        license.getDeviceId()
+            const response =
+                await net.fetch(
+                    LICENSE_API_URL,
+                    {
+                        method: 'POST',
 
+                        headers: {
+                            'Content-Type':
+                                'application/json'
+                        },
 
-
-    try {
-
-        const response =
-            await net.fetch(
-                LICENSE_API_URL,
-                {
-                    method: 'POST',
-
-                    headers: {
-                        'Content-Type':
-                            'application/json'
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            licenseKey:
-                                licenseKey.trim(),
-
-                            deviceId:
+                        body:
+                            JSON.stringify({
+                                licenseKey,
                                 deviceId
-                        })
+                            })
+                    }
+                )
+
+            const data =
+                await response.json()
+
+            if (!response.ok) {
+
+                return {
+                    success: false,
+
+                    error:
+                        data.error ||
+                        'Licence invalide.'
                 }
+
+            }
+
+            license.saveActivation({
+                licenseKey,
+                deviceId,
+                activatedAt:
+                    new Date().toISOString()
+            })
+
+            return {
+                success: true
+            }
+
+        } catch (error) {
+
+            console.error(
+                'Erreur activation licence :',
+                error
             )
 
-
-
-        const data =
-            await response.json()
-
-
-
-        if (!response.ok) {
-
             return {
-
                 success: false,
 
                 error:
-                    data.error ||
-                    'Licence invalide'
+                    'Impossible de contacter le serveur de licence.'
             }
+
         }
 
-
-
-        if (!data.success) {
-
-            return {
-
-                success: false,
-
-                error:
-                    data.error ||
-                    'Licence invalide'
-            }
-        }
-
-
-
-        // Sauvegarder l'activation
-        license.saveActivation({
-
-            licenseKey:
-                licenseKey.trim(),
-
-            ownerName:
-                data.ownerName ||
-                null,
-
-            deviceId:
-                deviceId,
-
-            activatedAt:
-                new Date().toISOString()
-        })
-
-
-
-        return {
-
-            success: true,
-
-            ownerName:
-                data.ownerName ||
-                null
-        }
-
-
-
-    } catch (error) {
-
-        console.error(
-            'Erreur activation licence :',
-            error
-        )
-
-
-
-        return {
-
-            success: false,
-
-            error:
-                'Impossible de contacter le serveur'
-        }
     }
-}
+)
 
+// =========================================
+// LICENCE : STATUT
+// =========================================
 
+ipcMain.handle(
+    'license-status',
+    async () => {
 
-// =======================================
-// REVALIDER LA LICENCE
-// =======================================
+        const activation =
+            license.getActivation()
+
+        if (!activation) {
+
+            return {
+                activated: false
+            }
+
+        }
+
+        const result =
+            await checkLicense()
+
+        return {
+            activated:
+                result.valid
+        }
+
+    }
+)
+
+// =========================================
+// VÉRIFICATION LICENCE
+// =========================================
 
 async function checkLicense() {
 
     const activation =
         license.getActivation()
 
-
-
-    // ===================================
-    // AUCUNE LICENCE ENREGISTRÉE
-    // ===================================
-
     if (!activation) {
 
         return {
-
-            success: false,
-
-            activated: false,
-
-            reason: 'invalid',
-
-            error:
-                'Aucune licence activée'
+            valid: false,
+            reason: 'invalid'
         }
+
     }
-
-
-
-    const deviceId =
-        license.getDeviceId()
-
-
 
     try {
 
@@ -552,279 +482,430 @@ async function checkLicense() {
 
                     body:
                         JSON.stringify({
-
                             licenseKey:
                                 activation.licenseKey,
 
                             deviceId:
-                                deviceId
+                                activation.deviceId
                         })
                 }
             )
 
-
-
         const data =
             await response.json()
-
-
-
-        // ===================================
-        // SERVEUR A RÉPONDU
-        // LICENCE INVALIDE
-        // ===================================
 
         if (!response.ok) {
 
             return {
-
-                success: false,
-
-                activated: false,
-
+                valid: false,
                 reason: 'invalid',
 
                 error:
                     data.error ||
-                    'Licence invalide'
+                    'Licence invalide.'
             }
+
         }
-
-
-
-        if (!data.success) {
-
-            return {
-
-                success: false,
-
-                activated: false,
-
-                reason: 'invalid',
-
-                error:
-                    data.error ||
-                    'Licence invalide'
-            }
-        }
-
-
-
-        // ===================================
-        // LICENCE VALIDE
-        // ===================================
 
         return {
-
-            success: true,
-
-            activated: true,
-
-            reason: 'valid',
-
-            ownerName:
-                data.ownerName ||
-                null
+            valid: true,
+            reason: 'valid'
         }
-
-
 
     } catch (error) {
 
-        // ===================================
-        // INTERNET / SERVEUR INACCESSIBLE
-        // ===================================
-
         console.error(
-            'Impossible de contacter le serveur de licence :',
+            'Erreur vérification licence :',
             error
         )
 
-
-
         return {
-
-            success: false,
-
-            activated: false,
-
+            valid: false,
             reason: 'offline',
 
             error:
-                'Impossible de contacter le serveur'
+                'Impossible de contacter le serveur de licence.'
         }
+
     }
+
 }
 
-
-
-// =======================================
-// VÉRIFICATION AUTOMATIQUE
-// =======================================
-
-let licenseCheckTimer = null
-
-
+// =========================================
+// VÉRIFICATION PÉRIODIQUE LICENCE
+// =========================================
 
 function startLicenseCheck() {
 
-    if (licenseCheckTimer) {
+    setInterval(
+        async () => {
 
-        clearInterval(
-            licenseCheckTimer
-        )
-    }
+            const result =
+                await checkLicense()
 
+            if (result.reason === 'invalid') {
 
+                console.log(
+                    'Licence invalide : arrêt des bots.'
+                )
 
-    licenseCheckTimer =
-        setInterval(
-            async () => {
+                if (botManager) {
 
-                const result =
-                    await checkLicense()
+                    botManager.stopAll()
 
-
-
-                // ===================================
-                // LICENCE RÉELLEMENT INVALIDE
-                // ===================================
+                }
 
                 if (
-                    !result.success &&
-                    result.reason === 'invalid'
+                    mainWindow &&
+                    !mainWindow.isDestroyed()
                 ) {
 
-                    console.error(
-                        'Licence invalide :',
-                        result.error
+                    mainWindow.webContents.send(
+                        'license-invalid',
+                        {
+                            error:
+                                result.error ||
+                                'Ta licence n’est plus valide.'
+                        }
                     )
 
-
-
-                    // Arrêter tous les bots
-                    if (botManager) {
-
-                        botManager.stopAll()
-                    }
-
-
-
-                    // Prévenir le renderer
-                    if (
-                        mainWindow &&
-                        !mainWindow.isDestroyed()
-                    ) {
-
-                        mainWindow.webContents.send(
-                            'license-invalid',
-                            {
-                                error:
-                                    result.error
-                            }
-                        )
-                    }
-
-
-
-                    return
                 }
 
+            }
 
+            if (result.reason === 'offline') {
 
-                // ===================================
-                // INTERNET INACCESSIBLE
-                // ===================================
+                console.warn(
+                    'Serveur de licence inaccessible. Les bots continuent de fonctionner.'
+                )
 
-                if (
-                    !result.success &&
-                    result.reason === 'offline'
-                ) {
+            }
 
-                    console.warn(
-                        'Serveur de licence inaccessible. Nouvelle tentative plus tard.'
-                    )
+        },
+        LICENSE_CHECK_INTERVAL
+    )
 
-
-
-                    // IMPORTANT :
-                    // On NE bloque PAS l'application
-                    // et on NE stoppe PAS les bots.
-
-                    return
-                }
-
-
-
-                // ===================================
-                // LICENCE VALIDE
-                // ===================================
-
-                if (result.success) {
-
-                    console.log(
-                        'Licence vérifiée avec succès.'
-                    )
-                }
-
-            },
-
-            LICENSE_CHECK_INTERVAL
-        )
 }
 
+// =========================================
+// BOTS
+// =========================================
 
+ipcMain.handle(
+    'get-bots',
+    () => {
 
-// =======================================
-// DÉMARRAGE DE L'APPLICATION
-// =======================================
+        return storage.loadBots()
+
+    }
+)
+
+ipcMain.handle(
+    'add-bot',
+    (event, bot) => {
+
+        const bots =
+            storage.loadBots()
+
+        const newBot = {
+            ...bot,
+
+            id:
+                Date.now().toString()
+        }
+
+        bots.push(newBot)
+
+        storage.saveBots(bots)
+
+        return newBot
+
+    }
+)
+
+ipcMain.handle(
+    'update-bot',
+    (event, data) => {
+
+        const bots =
+            storage.loadBots()
+
+        const index =
+            bots.findIndex(
+                bot =>
+                    bot.id === data.id
+            )
+
+        if (index === -1) {
+
+            return {
+                success: false
+            }
+
+        }
+
+        bots[index] = {
+            ...bots[index],
+            ...data.bot
+        }
+
+        storage.saveBots(bots)
+
+        return {
+            success: true,
+            bot: bots[index]
+        }
+
+    }
+)
+
+ipcMain.handle(
+    'delete-bot',
+    (event, id) => {
+
+        const bots =
+            storage.loadBots()
+
+        if (botManager) {
+
+            botManager.stopBot(id)
+
+        }
+
+        const filtered =
+            bots.filter(
+                bot =>
+                    bot.id !== id
+            )
+
+        storage.saveBots(filtered)
+
+        return {
+            success: true
+        }
+
+    }
+)
+
+// =========================================
+// START BOT
+// =========================================
+
+ipcMain.handle(
+    'start-bot',
+    async (event, bot) => {
+
+        const result =
+            await checkLicense()
+
+        if (result.reason === 'invalid') {
+
+            return {
+                success: false,
+
+                error:
+                    result.error ||
+                    'Licence invalide.'
+            }
+
+        }
+
+        if (result.reason === 'offline') {
+
+            return {
+                success: false,
+
+                error:
+                    'Impossible de contacter le serveur de licence.'
+            }
+
+        }
+
+        try {
+
+            await botManager.startBot(bot)
+
+            return {
+                success: true
+            }
+
+        } catch (error) {
+
+            console.error(
+                'Erreur démarrage bot :',
+                error
+            )
+
+            return {
+                success: false,
+
+                error:
+                    error.message
+            }
+
+        }
+
+    }
+)
+
+// =========================================
+// STOP BOT
+// =========================================
+
+ipcMain.handle(
+    'stop-bot',
+    async (event, id) => {
+
+        try {
+
+            await botManager.stopBot(id)
+
+            return {
+                success: true
+            }
+
+        } catch (error) {
+
+            console.error(
+                'Erreur arrêt bot :',
+                error
+            )
+
+            return {
+                success: false,
+
+                error:
+                    error.message
+            }
+
+        }
+
+    }
+)
+
+// =========================================
+// START ALL
+// =========================================
+
+ipcMain.handle(
+    'start-all',
+    async () => {
+
+        const result =
+            await checkLicense()
+
+        if (result.reason === 'invalid') {
+
+            return {
+                success: false,
+
+                error:
+                    result.error ||
+                    'Licence invalide.'
+            }
+
+        }
+
+        if (result.reason === 'offline') {
+
+            return {
+                success: false,
+
+                error:
+                    'Impossible de contacter le serveur de licence.'
+            }
+
+        }
+
+        try {
+
+            await botManager.startAll()
+
+            return {
+                success: true
+            }
+
+        } catch (error) {
+
+            console.error(
+                'Erreur démarrage de tous les bots :',
+                error
+            )
+
+            return {
+                success: false,
+
+                error:
+                    error.message
+            }
+
+        }
+
+    }
+)
+
+// =========================================
+// STOP ALL
+// =========================================
+
+ipcMain.handle(
+    'stop-all',
+    async () => {
+
+        try {
+
+            await botManager.stopAll()
+
+            return {
+                success: true
+            }
+
+        } catch (error) {
+
+            console.error(
+                'Erreur arrêt de tous les bots :',
+                error
+            )
+
+            return {
+                success: false,
+
+                error:
+                    error.message
+            }
+
+        }
+
+    }
+)
+
+// =========================================
+// DÉMARRAGE ELECTRON
+// =========================================
 
 app.whenReady().then(
     async () => {
 
         createWindow()
 
-
-
-        // ===================================
-        // SYSTÈME DE MISE À JOUR
-        // ===================================
-
-        setupAutoUpdater()
-
-
-
-        // ===================================
-        // VÉRIFICATION LICENCE
-        // ===================================
+        // =====================================
+        // VÉRIFICATION LICENCE AU DÉMARRAGE
+        // =====================================
 
         const result =
             await checkLicense()
 
+        if (result.reason === 'invalid') {
 
-
-        // ===================================
-        // LICENCE INVALIDE AU DÉMARRAGE
-        // ===================================
-
-        if (
-            !result.success &&
-            result.reason === 'invalid'
-        ) {
-
-            console.error(
-                'Licence invalide au démarrage :',
-                result.error
+            console.log(
+                'Licence invalide au démarrage.'
             )
-
-
 
             if (botManager) {
 
                 botManager.stopAll()
+
             }
-
-
 
             if (
                 mainWindow &&
@@ -835,46 +916,61 @@ app.whenReady().then(
                     'license-invalid',
                     {
                         error:
-                            result.error
+                            result.error ||
+                            'Ta licence n’est plus valide.'
                     }
                 )
+
             }
+
         }
 
-
-
-        // ===================================
-        // INTERNET INACCESSIBLE AU DÉMARRAGE
-        // ===================================
-
-        if (
-            !result.success &&
-            result.reason === 'offline'
-        ) {
+        if (result.reason === 'offline') {
 
             console.warn(
                 'Serveur de licence inaccessible au démarrage.'
             )
 
-
-
-            // Pour cette étape :
-            // on laisse l'application fonctionner.
         }
 
+        // =====================================
+        // VÉRIFICATION PÉRIODIQUE
+        // =====================================
 
-
-        // Démarrer la vérification automatique
         startLicenseCheck()
+
+        // =====================================
+        // AUTO-UPDATER
+        // =====================================
+
+        setupAutoUpdater()
+
+        // =====================================
+        // MAC
+        // =====================================
+
+        app.on(
+            'activate',
+            () => {
+
+                if (
+                    BrowserWindow.getAllWindows()
+                        .length === 0
+                ) {
+
+                    createWindow()
+
+                }
+
+            }
+        )
 
     }
 )
 
-
-
-// =======================================
-// FERMETURE DE L'APPLICATION
-// =======================================
+// =========================================
+// FERMETURE
+// =========================================
 
 app.on(
     'window-all-closed',
@@ -885,318 +981,8 @@ app.on(
         ) {
 
             app.quit()
-        }
-    }
-)
 
-
-
-// =======================================
-// LICENCE - STATUT LOCAL
-// =======================================
-
-ipcMain.handle(
-    'license-status',
-    () => {
-
-        const activation =
-            license.getActivation()
-
-
-
-        return {
-
-            activated:
-                !!activation,
-
-            ownerName:
-                activation?.ownerName ||
-                null
-        }
-    }
-)
-
-
-
-// =======================================
-// LICENCE - ACTIVATION
-// =======================================
-
-ipcMain.handle(
-    'activate-license',
-    async (
-        event,
-        licenseKey
-    ) => {
-
-        return await activateLicense(
-            licenseKey
-        )
-    }
-)
-
-
-
-// =======================================
-// RÉCUPÉRER LES BOTS
-// =======================================
-
-ipcMain.handle(
-    'get-bots',
-    () => {
-
-        return storage.loadBots()
-    }
-)
-
-
-
-// =======================================
-// AJOUTER UN BOT
-// =======================================
-
-ipcMain.handle(
-    'add-bot',
-    (event, bot) => {
-
-        const bots =
-            storage.loadBots()
-
-
-
-        bots.push(bot)
-
-
-
-        storage.saveBots(
-            bots
-        )
-
-
-
-        return bots
-    }
-)
-
-
-
-// =======================================
-// MODIFIER UN BOT
-// =======================================
-
-ipcMain.handle(
-    'update-bot',
-    (event, data) => {
-
-        const {
-            id,
-            bot
-        } = data
-
-
-
-        const bots =
-            storage.loadBots()
-
-
-
-        const index =
-            bots.findIndex(
-                existingBot =>
-                    existingBot.id === id
-            )
-
-
-
-        if (index === -1) {
-
-            throw new Error(
-                'Bot introuvable'
-            )
         }
 
-
-
-        bots[index] = {
-
-            ...bots[index],
-
-            ...bot,
-
-            id:
-                bots[index].id
-        }
-
-
-
-        storage.saveBots(
-            bots
-        )
-
-
-
-        return bots
-    }
-)
-
-
-
-// =======================================
-// SUPPRIMER UN BOT
-// =======================================
-
-ipcMain.handle(
-    'delete-bot',
-    (event, id) => {
-
-        const bots =
-            storage.loadBots()
-
-
-
-        const newBots =
-            bots.filter(
-                bot =>
-                    bot.id !== id
-            )
-
-
-
-        storage.saveBots(
-            newBots
-        )
-
-
-
-        botManager.stopBot(
-            id
-        )
-
-
-
-        return newBots
-    }
-)
-
-
-
-// =======================================
-// LANCER UN BOT
-// =======================================
-
-ipcMain.handle(
-    'start-bot',
-    async (event, bot) => {
-
-        const result =
-            await checkLicense()
-
-
-
-        if (!result.success) {
-
-            return {
-                success: false,
-
-                error:
-                    result.reason === 'offline'
-                        ? 'Impossible de vérifier la licence.'
-                        : result.error ||
-                          'Licence invalide.'
-            }
-        }
-
-
-
-        return botManager.startBot(
-            bot
-        )
-    }
-)
-
-
-
-// =======================================
-// ARRÊTER UN BOT
-// =======================================
-
-ipcMain.handle(
-    'stop-bot',
-    (event, id) => {
-
-        return botManager.stopBot(
-            id
-        )
-    }
-)
-
-
-
-// =======================================
-// LANCER TOUS LES BOTS
-// =======================================
-
-ipcMain.handle(
-    'start-all',
-    async () => {
-
-        const result =
-            await checkLicense()
-
-
-
-        if (!result.success) {
-
-            return {
-                success: false,
-
-                error:
-                    result.reason === 'offline'
-                        ? 'Impossible de vérifier la licence.'
-                        : result.error ||
-                          'Licence invalide.'
-            }
-        }
-
-
-
-        const bots =
-            storage.loadBots()
-
-
-
-        for (
-            const bot
-            of bots
-        ) {
-
-            botManager.startBot(
-                bot
-            )
-        }
-
-
-
-        return {
-            success: true
-        }
-    }
-)
-
-
-
-// =======================================
-// ARRÊTER TOUS LES BOTS
-// =======================================
-
-ipcMain.handle(
-    'stop-all',
-    () => {
-
-        botManager.stopAll()
-
-
-
-        return true
     }
 )

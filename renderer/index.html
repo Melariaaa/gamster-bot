@@ -23,6 +23,25 @@
 
 <body>
 
+
+<!-- ================================= -->
+<!-- NEIGE EN ARRIÈRE-PLAN -->
+<!-- ================================= -->
+
+<div
+    class="snow-background"
+    aria-hidden="true"
+>
+
+    <div class="snow-layer snow-layer-1"></div>
+
+    <div class="snow-layer snow-layer-2"></div>
+
+    <div class="snow-layer snow-layer-3"></div>
+
+</div>
+
+
 <!-- ================================= -->
 <!-- ÉCRAN LICENCE -->
 <!-- ================================= -->
@@ -74,7 +93,16 @@
 
 </div>
 
-<header>
+
+<!-- ================================= -->
+<!-- HEADER -->
+<!-- ================================= -->
+
+<header class="topbar">
+
+    <!-- ================================= -->
+    <!-- LOGO + NOM -->
+    <!-- ================================= -->
 
     <div class="brand">
 
@@ -82,10 +110,10 @@
             G
         </div>
 
-        <div>
+        <div class="brand-text">
 
             <h1>
-                Gamster Bot
+                Gamster <span>Bot</span>
             </h1>
 
             <p>
@@ -97,21 +125,64 @@
     </div>
 
 
+    <!-- ================================= -->
+    <!-- SÉPARATEUR -->
+    <!-- ================================= -->
+
+    <div class="topbar-separator"></div>
+
+
+    <!-- ================================= -->
+    <!-- CRÉATEUR -->
+    <!-- ================================= -->
+
+    <div class="creator">
+
+        <div class="creator-avatar">
+
+            <img
+                src="assets/melaria-head.png"
+                alt="Melaria"
+            >
+
+        </div>
+
+        <div class="creator-text">
+
+            <span class="creator-by">
+                By
+            </span>
+
+            <span class="creator-name">
+                Melaria
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================= -->
+    <!-- BOUTONS -->
+    <!-- ================================= -->
+
     <div class="header-buttons">
 
         <button
             id="startAll"
-            class="btn success"
+            class="btn success topbar-button"
         >
-            ▶ Lancer tout
+            <span class="button-icon">▶</span>
+            Lancer tout
         </button>
 
 
         <button
             id="stopAll"
-            class="btn danger"
+            class="btn danger topbar-button"
         >
-            ■ Arrêter tout
+            <span class="button-icon">■</span>
+            Arrêter tout
         </button>
 
     </div>
@@ -119,6 +190,9 @@
 </header>
 
 
+<!-- ================================= -->
+<!-- CONTENU PRINCIPAL -->
+<!-- ================================= -->
 
 <main>
 
@@ -152,7 +226,6 @@
     </div>
 
 
-
     <!-- ================================= -->
     <!-- LISTE DES BOTS -->
     <!-- ================================= -->
@@ -168,7 +241,6 @@
 </main>
 
 
-
 <!-- ================================= -->
 <!-- AJOUT BOT -->
 <!-- ================================= -->
@@ -177,7 +249,6 @@
     id="modal"
     class="modal hidden"
 >
-
 
     <div class="modal-content">
 
@@ -207,7 +278,6 @@
         </div>
 
 
-
         <label>
             Pseudo Minecraft
         </label>
@@ -220,7 +290,6 @@
         >
 
 
-
         <label>
             Mot de passe
         </label>
@@ -231,7 +300,6 @@
             type="password"
             placeholder="Mot de passe"
         >
-
 
 
         <div class="modal-buttons">
@@ -261,7 +329,6 @@
 </div>
 
 
-
 <!-- ================================= -->
 <!-- PARAMETRES BOT -->
 <!-- ================================= -->
@@ -270,7 +337,6 @@
     id="settingsModal"
     class="modal hidden"
 >
-
 
     <div class="modal-content settings">
 
@@ -300,7 +366,6 @@
         </div>
 
 
-
         <h3>
             🌐 Proxy
         </h3>
@@ -320,7 +385,6 @@
         </label>
 
 
-
         <label>
             Adresse du proxy
         </label>
@@ -331,7 +395,6 @@
             type="text"
             placeholder="smart.eu-fra.liquidproxy.net"
         >
-
 
 
         <label>
@@ -346,7 +409,6 @@
         >
 
 
-
         <label>
             Nom d'utilisateur proxy
         </label>
@@ -357,7 +419,6 @@
             type="text"
             placeholder="Utilisateur"
         >
-
 
 
         <label>
@@ -372,7 +433,6 @@
         >
 
 
-
         <div class="proxy-info">
 
             🔒 Les informations du proxy
@@ -380,7 +440,6 @@
             pour la connexion du bot.
 
         </div>
-
 
 
         <div class="modal-buttons">
@@ -410,7 +469,6 @@
 </div>
 
 
-
 <!-- ================================= -->
 <!-- CONFIRMATION SUPPRESSION -->
 <!-- ================================= -->
@@ -420,29 +478,18 @@
     class="modal hidden"
 >
 
-
     <div class="modal-content delete-modal">
 
 
-        <!-- ICONE -->
-
         <div class="delete-icon">
-
             🗑️
-
         </div>
 
 
-        <!-- TITRE -->
-
         <h2 class="delete-title">
-
             Supprimer le bot ?
-
         </h2>
 
-
-        <!-- TEXTE -->
 
         <p class="delete-text">
 
@@ -460,8 +507,6 @@
 
         </p>
 
-
-        <!-- BOUTONS -->
 
         <div class="modal-buttons delete-buttons">
 
@@ -490,9 +535,97 @@
 </div>
 
 
+<!-- ================================= -->
+<!-- NOTIFICATION MISE À JOUR -->
+<!-- ================================= -->
+
+<div
+    id="updateNotification"
+    class="update-notification hidden"
+>
+
+    <div class="update-icon">
+        🔄
+    </div>
+
+
+    <div class="update-content">
+
+        <div
+            id="updateTitle"
+            class="update-title"
+        >
+            Mise à jour disponible
+        </div>
+
+
+        <div
+            id="updateMessage"
+            class="update-message"
+        >
+            Une nouvelle version de Gamster Bot est disponible.
+        </div>
+
+
+        <div
+            id="updateProgressContainer"
+            class="update-progress-container hidden"
+        >
+
+            <div class="update-progress-bar">
+
+                <div
+                    id="updateProgress"
+                    class="update-progress"
+                ></div>
+
+            </div>
+
+
+            <div
+                id="updateProgressText"
+                class="update-progress-text"
+            >
+                0%
+            </div>
+
+        </div>
+
+
+        <div class="update-buttons">
+
+            <button
+                id="updateInstall"
+                class="btn primary hidden"
+            >
+                Redémarrer et mettre à jour
+            </button>
+
+
+            <button
+                id="updateLater"
+                class="btn"
+            >
+                Plus tard
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================================= -->
+<!-- SCRIPTS -->
+<!-- ================================= -->
 
 <script src="license.js"></script>
+
 <script src="app.js"></script>
+
+<script src="update.js"></script>
+
 
 </body>
 

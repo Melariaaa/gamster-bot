@@ -15,8 +15,17 @@ class MinecraftBot {
 
         this.timer = null
         this.swingTimer = null
+
+        // Permet de différencier :
+        // - une vraie déconnexion
+        // - un arrêt demandé depuis l'application
+        this.manualStop = false
     }
 
+
+    // ==========================================
+    // LOG
+    // ==========================================
 
     log(message) {
 
@@ -26,6 +35,10 @@ class MinecraftBot {
         })
     }
 
+
+    // ==========================================
+    // UPDATE
+    // ==========================================
 
     update(status) {
 
@@ -40,6 +53,10 @@ class MinecraftBot {
     }
 
 
+    // ==========================================
+    // START
+    // ==========================================
+
     start() {
 
         if (this.bot) {
@@ -47,16 +64,30 @@ class MinecraftBot {
         }
 
 
-        this.log('Connexion au serveur...')
+        // Nouveau démarrage :
+        // on considère que l'arrêt précédent
+        // n'est plus actif.
 
-        this.update('connecting')
+        this.manualStop = false
+
+
+        this.log(
+            'Connexion au serveur...'
+        )
+
+
+        this.update(
+            'connecting'
+        )
 
 
         const options = {
 
-            username: this.data.username,
+            username:
+                this.data.username,
 
-            version: '1.8.9'
+            version:
+                '1.8.9'
         }
 
 
@@ -69,9 +100,11 @@ class MinecraftBot {
             !this.data.proxy.enabled
         ) {
 
-            options.host = 'mc.gamster.org'
+            options.host =
+                'mc.gamster.org'
 
-            options.port = 25565
+            options.port =
+                25565
         }
 
 
@@ -85,60 +118,70 @@ class MinecraftBot {
                 this.data.proxy
 
 
-            options.connect = (client) => {
+            options.connect =
+                (client) => {
 
-                socks.createConnection({
+                    socks.createConnection({
 
-                    proxy: {
+                        proxy: {
 
-                        host: proxy.host,
+                            host:
+                                proxy.host,
 
-                        port: parseInt(
-                            proxy.port
-                        ),
+                            port:
+                                parseInt(
+                                    proxy.port
+                                ),
 
-                        type: 5,
+                            type:
+                                5,
 
-                        userId:
-                            proxy.username,
+                            userId:
+                                proxy.username,
 
-                        password:
-                            proxy.password
-                    },
+                            password:
+                                proxy.password
+                        },
 
-                    command: 'connect',
+                        command:
+                            'connect',
 
-                    destination: {
+                        destination: {
 
-                        host: 'mc.gamster.org',
+                            host:
+                                'mc.gamster.org',
 
-                        port: 25565
-                    }
+                            port:
+                                25565
+                        }
 
-                }, (err, info) => {
+                    }, (err, info) => {
 
-                    if (err) {
+                        if (err) {
 
-                        this.log(
-                            '❌ Erreur proxy : ' +
-                            err.message
+                            this.log(
+                                '❌ Erreur proxy : ' +
+                                err.message
+                            )
+
+                            this.update(
+                                'error'
+                            )
+
+                            return
+                        }
+
+
+                        client.setSocket(
+                            info.socket
                         )
 
-                        this.update('error')
 
-                        return
-                    }
-
-
-                    client.setSocket(
-                        info.socket
-                    )
-
-                    client.emit(
-                        'connect'
-                    )
-                })
-            }
+                        client.emit(
+                            'connect'
+                        )
+                    })
+                }
         }
 
 
@@ -160,6 +203,15 @@ class MinecraftBot {
             'spawn',
             () => {
 
+                // Si le bot a été arrêté
+                // avant d'arriver au spawn,
+                // on ne démarre pas le compteur.
+
+                if (this.manualStop) {
+                    return
+                }
+
+
                 this.startTime =
                     Date.now()
 
@@ -174,10 +226,16 @@ class MinecraftBot {
                 )
 
 
-                // Connexion au serveur
+                // ======================================
+                // CONNEXION SERVEUR
+                // ======================================
+
                 setTimeout(() => {
 
-                    if (!this.bot) {
+                    if (
+                        !this.bot ||
+                        this.manualStop
+                    ) {
                         return
                     }
 
@@ -195,11 +253,17 @@ class MinecraftBot {
                 }, 3000)
 
 
-                // Compteur
+                // ======================================
+                // COMPTEUR
+                // ======================================
+
                 this.timer =
                     setInterval(() => {
 
-                        if (!this.bot) {
+                        if (
+                            !this.bot ||
+                            this.manualStop
+                        ) {
                             return
                         }
 
@@ -223,11 +287,52 @@ class MinecraftBot {
 
                 this.clearTimers()
 
+
+                // Sauvegarde de la raison
+                // avant de nettoyer le bot.
+
+                const wasManualStop =
+                    this.manualStop
+
+
                 this.bot = null
+
+
+                // ======================================
+                // ARRET DEMANDE PAR L'APPLICATION
+                // ======================================
+
+                if (wasManualStop) {
+
+                    this.startTime =
+                        null
+
+
+                    this.update(
+                        'stopped'
+                    )
+
+
+                    this.log(
+                        '⚪ Bot arrêté.'
+                    )
+
+                    return
+                }
+
+
+                // ======================================
+                // DECONNEXION NORMALE
+                // ======================================
+
+                this.startTime =
+                    null
+
 
                 this.update(
                     'disconnected'
                 )
+
 
                 this.log(
                     '🔴 Bot déconnecté.'
@@ -249,6 +354,7 @@ class MinecraftBot {
                     err.message
                 )
 
+
                 this.update(
                     'error'
                 )
@@ -265,7 +371,8 @@ class MinecraftBot {
 
                 if (
                     this.bot &&
-                    this.bot.entity
+                    this.bot.entity &&
+                    !this.manualStop
                 ) {
 
                     this.bot.swingArm(
@@ -277,29 +384,73 @@ class MinecraftBot {
     }
 
 
+    // ==========================================
+    // STOP
+    // ==========================================
+
     stop() {
 
-        if (!this.bot) {
-            return
-        }
+        // On indique AVANT quit()
+        // qu'il s'agit d'un arrêt volontaire.
+
+        this.manualStop = true
 
 
         this.clearTimers()
 
 
-        this.bot.quit(
-            'Arrêt depuis l’application'
-        )
+        // Le compteur doit être arrêté
+        // immédiatement.
+
+        this.startTime =
+            null
 
 
-        this.bot = null
-
+        // On informe immédiatement
+        // l'interface.
 
         this.update(
             'stopped'
         )
+
+
+        if (!this.bot) {
+
+            return
+        }
+
+
+        const bot =
+            this.bot
+
+
+        // On ne met PAS this.bot = null ici.
+        //
+        // On laisse l'événement "end"
+        // faire le nettoyage correctement.
+
+        try {
+
+            bot.quit(
+                'Arrêt depuis l’application'
+            )
+
+        } catch (error) {
+
+            this.log(
+                '⚠️ Erreur lors de l’arrêt : ' +
+                error.message
+            )
+
+
+            this.bot = null
+        }
     }
 
+
+    // ==========================================
+    // NETTOYAGE DES TIMERS
+    // ==========================================
 
     clearTimers() {
 
@@ -309,7 +460,8 @@ class MinecraftBot {
                 this.timer
             )
 
-            this.timer = null
+            this.timer =
+                null
         }
 
 
@@ -319,7 +471,8 @@ class MinecraftBot {
                 this.swingTimer
             )
 
-            this.swingTimer = null
+            this.swingTimer =
+                null
         }
     }
 }
