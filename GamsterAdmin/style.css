@@ -1,0 +1,824 @@
+* {
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+
+    width: 100%;
+    min-height: 100%;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background: #0f1117;
+
+    color: #f5f7fa;
+}
+
+
+body {
+    min-height: 100vh;
+}
+
+
+/* ==========================================
+   UTILITAIRES
+   ========================================== */
+
+.hidden {
+    display: none !important;
+}
+
+
+/* ==========================================
+   ÉCRAN DE CONNEXION
+   ========================================== */
+
+.screen {
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+}
+
+
+.login-box {
+    width: 100%;
+    max-width: 420px;
+
+    padding: 40px;
+
+    background: #171a22;
+
+    border: 1px solid #282d38;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 20px 60px
+        rgba(0, 0, 0, 0.35);
+}
+
+
+.logo {
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 20px;
+
+    border-radius: 15px;
+
+    background: #ffffff;
+
+    color: #0f1117;
+
+    font-size: 28px;
+
+    font-weight: 800;
+}
+
+
+.login-box h1 {
+    margin: 0;
+
+    text-align: center;
+
+    font-size: 27px;
+}
+
+
+.subtitle {
+    margin: 8px 0 30px;
+
+    text-align: center;
+
+    color: #8d95a5;
+
+    font-size: 14px;
+}
+
+
+.login-box label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #cbd1dc;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+.login-box input {
+    width: 100%;
+
+    height: 46px;
+
+    margin-bottom: 18px;
+
+    padding: 0 14px;
+
+    border: 1px solid #303643;
+
+    border-radius: 10px;
+
+    outline: none;
+
+    background: #10131a;
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+}
+
+
+.login-box input:focus {
+    border-color: #6d7482;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(255, 255, 255, 0.05);
+}
+
+
+.login-box input::placeholder {
+    color: #656d7c;
+}
+
+
+/* ==========================================
+   BOUTONS
+   ========================================== */
+
+button {
+    font-family: inherit;
+
+    cursor: pointer;
+}
+
+
+.primary-button {
+    width: 100%;
+
+    height: 46px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    color: #0f1117;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    transition:
+        opacity 0.2s,
+        transform 0.1s;
+}
+
+
+.primary-button:hover {
+    opacity: 0.9;
+}
+
+
+.primary-button:active {
+    transform: scale(0.99);
+}
+
+
+.primary-button:disabled {
+    opacity: 0.5;
+
+    cursor: not-allowed;
+}
+
+
+.secondary-button,
+.logout-button {
+    height: 40px;
+
+    padding: 0 16px;
+
+    border: 1px solid #303643;
+
+    border-radius: 9px;
+
+    background: #171a22;
+
+    color: #dce1e9;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    transition:
+        background 0.2s,
+        border-color 0.2s;
+}
+
+
+.secondary-button:hover,
+.logout-button:hover {
+    background: #20242d;
+
+    border-color: #414856;
+}
+
+
+.small-button {
+    width: auto;
+
+    padding: 0 16px;
+}
+
+
+/* ==========================================
+   BOUTONS HEADER
+   ========================================== */
+
+.header-buttons {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+/* ==========================================
+   ERREURS
+   ========================================== */
+
+.error {
+    margin-top: 16px;
+
+    padding: 12px 14px;
+
+    border: 1px solid #573238;
+
+    border-radius: 9px;
+
+    background: #24171b;
+
+    color: #ff9ca8;
+
+    font-size: 13px;
+
+    line-height: 1.4;
+}
+
+
+/* ==========================================
+   PANNEAU ADMIN
+   ========================================== */
+
+.admin-screen {
+    min-height: 100vh;
+
+    background: #0f1117;
+}
+
+
+.topbar {
+    height: 72px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 30px;
+
+    border-bottom: 1px solid #282d38;
+
+    background: #14171e;
+}
+
+
+.brand {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.brand-logo {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    color: #0f1117;
+
+    font-size: 20px;
+
+    font-weight: 800;
+}
+
+
+.brand strong {
+    display: block;
+
+    font-size: 15px;
+}
+
+
+.brand span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #7f8796;
+
+    font-size: 12px;
+}
+
+
+/* ==========================================
+   CONTENU
+   ========================================== */
+
+.content {
+    width: 100%;
+
+    max-width: 1400px;
+
+    margin: 0 auto;
+
+    padding: 32px;
+}
+
+
+.page-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 25px;
+}
+
+
+.page-header h2 {
+    margin: 0;
+
+    font-size: 25px;
+}
+
+
+.page-header p {
+    margin: 7px 0 0;
+
+    color: #7f8796;
+
+    font-size: 14px;
+}
+
+
+/* ==========================================
+   STATISTIQUES
+   ========================================== */
+
+.stats {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 16px;
+
+    margin-bottom: 22px;
+}
+
+
+.stat-card {
+    padding: 20px;
+
+    border: 1px solid #282d38;
+
+    border-radius: 14px;
+
+    background: #171a22;
+}
+
+
+.stat-card span {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #858d9c;
+
+    font-size: 13px;
+}
+
+
+.stat-card strong {
+    display: block;
+
+    font-size: 27px;
+}
+
+
+/* ==========================================
+   TABLEAU
+   ========================================== */
+
+.table-card {
+    overflow: hidden;
+
+    border: 1px solid #282d38;
+
+    border-radius: 14px;
+
+    background: #171a22;
+}
+
+
+.table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+
+table {
+    width: 100%;
+
+    min-width: 1050px;
+
+    border-collapse: collapse;
+}
+
+
+thead {
+    background: #14171e;
+}
+
+
+th {
+    padding: 15px 18px;
+
+    border-bottom: 1px solid #282d38;
+
+    color: #858d9c;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    text-align: left;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.05em;
+}
+
+
+td {
+    padding: 16px 18px;
+
+    border-bottom: 1px solid #242933;
+
+    color: #dce1e9;
+
+    font-size: 13px;
+
+    vertical-align: middle;
+}
+
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+tbody tr:hover {
+    background: #1b1f28;
+}
+
+
+/* ==========================================
+   CLÉ DE LICENCE
+   ========================================== */
+
+.license-key {
+    font-family:
+        Consolas,
+        "Courier New",
+        monospace;
+
+    color: #ffffff;
+
+    font-size: 12px;
+
+    letter-spacing: 0.03em;
+}
+
+
+/* ==========================================
+   BADGES
+   ========================================== */
+
+.badge {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+
+.badge::before {
+    content: "";
+
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: currentColor;
+}
+
+
+.badge.active {
+    color: #76d89b;
+
+    background: #17271e;
+}
+
+
+.badge.inactive {
+    color: #ff8f9d;
+
+    background: #2a191d;
+}
+
+
+.device-linked {
+    color: #76d89b;
+}
+
+
+.device-not-linked {
+    color: #777f8e;
+}
+
+
+.monospace {
+    font-family:
+        Consolas,
+        "Courier New",
+        monospace;
+}
+
+
+.muted {
+    color: #777f8e;
+}
+
+
+/* ==========================================
+   BOUTON ACTION LICENCE
+   ========================================== */
+
+.license-action-button {
+    white-space: nowrap;
+}
+
+
+/* ==========================================
+   MODALE
+   ========================================== */
+
+.modal {
+    position: fixed;
+
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        rgba(0, 0, 0, 0.65);
+
+    z-index: 1000;
+}
+
+
+.modal-box {
+    width: 100%;
+
+    max-width: 450px;
+
+    padding: 30px;
+
+    border: 1px solid #303643;
+
+    border-radius: 16px;
+
+    background: #171a22;
+
+    box-shadow:
+        0 25px 80px
+        rgba(0, 0, 0, 0.5);
+}
+
+
+.modal-box h2 {
+    margin: 0;
+
+    font-size: 22px;
+}
+
+
+.modal-description {
+    margin: 8px 0 25px;
+
+    color: #7f8796;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+.modal-box label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #cbd1dc;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+.modal-box input,
+.modal-box textarea {
+    width: 100%;
+
+    margin-bottom: 18px;
+
+    padding: 12px 14px;
+
+    border: 1px solid #303643;
+
+    border-radius: 10px;
+
+    outline: none;
+
+    background: #10131a;
+
+    color: #ffffff;
+
+    font-family: inherit;
+
+    font-size: 14px;
+}
+
+
+.modal-box input {
+    height: 46px;
+}
+
+
+.modal-box textarea {
+    min-height: 100px;
+
+    resize: vertical;
+}
+
+
+.modal-box input:focus,
+.modal-box textarea:focus {
+    border-color: #6d7482;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(255, 255, 255, 0.05);
+}
+
+
+.modal-box input::placeholder,
+.modal-box textarea::placeholder {
+    color: #656d7c;
+}
+
+
+.modal-buttons {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 5px;
+}
+
+
+.modal-buttons .secondary-button {
+    width: auto;
+}
+
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (
+    max-width: 800px
+) {
+
+    .topbar {
+        padding: 0 18px;
+    }
+
+
+    .content {
+        padding: 20px;
+    }
+
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+
+    .page-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+
+    .header-buttons {
+        width: 100%;
+
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+
+    .header-buttons button {
+        width: 100%;
+    }
+
+}

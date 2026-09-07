@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Gamster Bot</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+<!-- ================================= -->
+<!-- ÉCRAN LICENCE -->
+<!-- ================================= -->
+
+<div
+    id="licenseScreen"
+    class="license-screen"
+>
+
+    <div class="license-box">
+
+        <div class="license-logo">
+            G
+        </div>
+
+        <h1>
+            Gamster Bot
+        </h1>
+
+        <p class="license-subtitle">
+            Activation nécessaire
+        </p>
+
+        <p class="license-description">
+            Entre ta clé de licence pour
+            utiliser Gamster Bot.
+        </p>
+
+        <input
+            id="licenseInput"
+            type="text"
+            placeholder="GMST-XXXX-XXXX-XXXX"
+            autocomplete="off"
+        >
+
+        <button
+            id="activateLicense"
+            class="btn primary license-button"
+        >
+            Activer Gamster Bot
+        </button>
+
+        <div
+            id="licenseError"
+            class="license-error hidden"
+        ></div>
+
+    </div>
+
+</div>
+
+<header>
+
+    <div class="brand">
+
+        <div class="logo">
+            G
+        </div>
+
+        <div>
+
+            <h1>
+                Gamster Bot
+            </h1>
+
+            <p>
+                Minecraft Bot Manager
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="header-buttons">
+
+        <button
+            id="startAll"
+            class="btn success"
+        >
+            ▶ Lancer tout
+        </button>
+
+
+        <button
+            id="stopAll"
+            class="btn danger"
+        >
+            ■ Arrêter tout
+        </button>
+
+    </div>
+
+</header>
+
+
+
+<main>
+
+
+    <!-- ================================= -->
+    <!-- MES BOTS -->
+    <!-- ================================= -->
+
+    <div class="top-bar">
+
+        <div>
+
+            <h2>
+                Mes bots
+            </h2>
+
+            <span id="botCount">
+                0 bots
+            </span>
+
+        </div>
+
+
+        <button
+            id="addBot"
+            class="btn primary"
+        >
+            ＋ Ajouter un bot
+        </button>
+
+    </div>
+
+
+
+    <!-- ================================= -->
+    <!-- LISTE DES BOTS -->
+    <!-- ================================= -->
+
+    <div
+        id="botList"
+        class="bot-list"
+    >
+
+    </div>
+
+
+</main>
+
+
+
+<!-- ================================= -->
+<!-- AJOUT BOT -->
+<!-- ================================= -->
+
+<div
+    id="modal"
+    class="modal hidden"
+>
+
+
+    <div class="modal-content">
+
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>
+                    Ajouter un bot
+                </h2>
+
+                <p>
+                    Configure ton bot Minecraft
+                </p>
+
+            </div>
+
+
+            <button
+                id="closeModal"
+                class="close"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+
+        <label>
+            Pseudo Minecraft
+        </label>
+
+
+        <input
+            id="username"
+            type="text"
+            placeholder="ExempleBot"
+        >
+
+
+
+        <label>
+            Mot de passe
+        </label>
+
+
+        <input
+            id="password"
+            type="password"
+            placeholder="Mot de passe"
+        >
+
+
+
+        <div class="modal-buttons">
+
+
+            <button
+                id="cancel"
+                class="btn"
+            >
+                Annuler
+            </button>
+
+
+            <button
+                id="save"
+                class="btn primary"
+            >
+                Ajouter
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- ================================= -->
+<!-- PARAMETRES BOT -->
+<!-- ================================= -->
+
+<div
+    id="settingsModal"
+    class="modal hidden"
+>
+
+
+    <div class="modal-content settings">
+
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>
+                    ⚙ Paramètres du bot
+                </h2>
+
+                <p id="settingsBotName">
+                    Configuration
+                </p>
+
+            </div>
+
+
+            <button
+                id="closeSettings"
+                class="close"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+
+        <h3>
+            🌐 Proxy
+        </h3>
+
+
+        <label class="switch-line">
+
+            <span>
+                Utiliser un proxy SOCKS5
+            </span>
+
+            <input
+                id="proxyEnabled"
+                type="checkbox"
+            >
+
+        </label>
+
+
+
+        <label>
+            Adresse du proxy
+        </label>
+
+
+        <input
+            id="proxyHost"
+            type="text"
+            placeholder="smart.eu-fra.liquidproxy.net"
+        >
+
+
+
+        <label>
+            Port
+        </label>
+
+
+        <input
+            id="proxyPort"
+            type="number"
+            placeholder="1080"
+        >
+
+
+
+        <label>
+            Nom d'utilisateur proxy
+        </label>
+
+
+        <input
+            id="proxyUsername"
+            type="text"
+            placeholder="Utilisateur"
+        >
+
+
+
+        <label>
+            Mot de passe proxy
+        </label>
+
+
+        <input
+            id="proxyPassword"
+            type="password"
+            placeholder="Mot de passe"
+        >
+
+
+
+        <div class="proxy-info">
+
+            🔒 Les informations du proxy
+            sont utilisées uniquement
+            pour la connexion du bot.
+
+        </div>
+
+
+
+        <div class="modal-buttons">
+
+
+            <button
+                id="cancelSettings"
+                class="btn"
+            >
+                Annuler
+            </button>
+
+
+            <button
+                id="saveSettings"
+                class="btn primary"
+            >
+                Sauvegarder
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- ================================= -->
+<!-- CONFIRMATION SUPPRESSION -->
+<!-- ================================= -->
+
+<div
+    id="deleteModal"
+    class="modal hidden"
+>
+
+
+    <div class="modal-content delete-modal">
+
+
+        <!-- ICONE -->
+
+        <div class="delete-icon">
+
+            🗑️
+
+        </div>
+
+
+        <!-- TITRE -->
+
+        <h2 class="delete-title">
+
+            Supprimer le bot ?
+
+        </h2>
+
+
+        <!-- TEXTE -->
+
+        <p class="delete-text">
+
+            Es-tu sûr de vouloir supprimer
+
+            <strong id="deleteBotName"></strong>
+
+            ?
+
+            <br>
+
+            <span>
+                Cette action est irréversible.
+            </span>
+
+        </p>
+
+
+        <!-- BOUTONS -->
+
+        <div class="modal-buttons delete-buttons">
+
+
+            <button
+                id="cancelDelete"
+                class="btn"
+            >
+                Annuler
+            </button>
+
+
+            <button
+                id="confirmDelete"
+                class="btn danger delete-confirm"
+            >
+                🗑 Supprimer
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<script src="license.js"></script>
+<script src="app.js"></script>
+
+</body>
+
+</html>
