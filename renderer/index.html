@@ -101,7 +101,19 @@
     <div class="brand">
 
         <div class="logo">
-            G
+
+            <img
+                src="assets/gamster-icon.png"
+                alt="Gamster Bot"
+                style="
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    border-radius: inherit;
+                    display: block;
+                "
+            >
+
         </div>
 
         <div class="brand-text">
@@ -353,7 +365,7 @@
 
     <section
         id="offlineAccountsPage"
-        class="page-section"
+        class="page-section offline-page"
     >
 
         <div class="top-bar">
@@ -373,125 +385,173 @@
         </div>
 
 
-        <div
-            class="bot-list"
-            style="margin-top: 20px;"
-        >
+        <!-- ===================================
+             CONTENEUR GAUCHE + DROITE
+        =================================== -->
 
-            <div
-                class="bot-card"
-                style="max-width: 600px;"
-            >
+        <div class="offline-accounts-layout">
 
-                <div class="bot-header">
 
-                    <div class="bot-name">
-                        👤 Créer un compte
+            <!-- ===================================
+                 CARTE CREATION
+            =================================== -->
+
+            <div class="bot-card offline-create-card">
+
+
+                <!-- HEADER -->
+
+                <div class="offline-card-header">
+
+                    <div class="offline-card-icon">
+                        👤
+                    </div>
+
+                    <div>
+
+                        <div class="bot-name">
+                            Créer un compte
+                        </div>
+
+                        <div class="offline-card-description">
+                            Configure les identifiants du compte Minecraft.
+                        </div>
+
                     </div>
 
                 </div>
 
 
                 <!-- ===================================
-                     PSEUDO
+                     INFORMATIONS DU COMPTE
                 =================================== -->
 
-                <div
-                    style="
-                        margin-top: 20px;
-                    "
-                >
+                <div class="offline-form">
 
-                    <label>
-                        Pseudo Minecraft
-                    </label>
 
-                    <input
-                        id="offlineUsername"
-                        type="text"
-                        placeholder="MonBot"
-                        autocomplete="off"
-                    >
+                    <!-- PSEUDO -->
+
+                    <div class="offline-field">
+
+                        <label for="offlineUsername">
+                            Pseudo Minecraft
+                        </label>
+
+                        <div class="offline-input-wrapper">
+
+                            <span class="offline-input-icon">
+                                ⛏
+                            </span>
+
+                            <input
+                                id="offlineUsername"
+                                type="text"
+                                placeholder="MonBot"
+                                autocomplete="off"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- MOT DE PASSE -->
+
+                    <div class="offline-field">
+
+                        <label for="offlinePassword">
+                            Mot de passe serveur
+                        </label>
+
+                        <div class="offline-input-wrapper">
+
+                            <span class="offline-input-icon">
+                                🔒
+                            </span>
+
+                            <input
+                                id="offlinePassword"
+                                type="password"
+                                placeholder="Mot de passe"
+                                autocomplete="new-password"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CONFIRMATION -->
+
+                    <div class="offline-field">
+
+                        <label for="offlinePasswordConfirm">
+                            Confirmation du mot de passe
+                        </label>
+
+                        <div class="offline-input-wrapper">
+
+                            <span class="offline-input-icon">
+                                ✓
+                            </span>
+
+                            <input
+                                id="offlinePasswordConfirm"
+                                type="password"
+                                placeholder="Confirmer le mot de passe"
+                                autocomplete="new-password"
+                            >
+
+                        </div>
+
+                    </div>
 
                 </div>
 
 
                 <!-- ===================================
-                     MOT DE PASSE
+                     PROXY SOCKS5
                 =================================== -->
 
-                <div
-                    style="
-                        margin-top: 15px;
-                    "
-                >
-
-                    <label>
-                        Mot de passe serveur
-                    </label>
-
-                    <input
-                        id="offlinePassword"
-                        type="password"
-                        placeholder="Mot de passe"
-                        autocomplete="new-password"
-                    >
-
-                </div>
+                <div class="offline-proxy-section">
 
 
-                <!-- ===================================
-                     CONFIRMATION
-                =================================== -->
+                    <div class="offline-section-title">
 
-                <div
-                    style="
-                        margin-top: 15px;
-                    "
-                >
+                        <div class="offline-section-icon">
+                            🌐
+                        </div>
 
-                    <label>
-                        Confirmation du mot de passe
-                    </label>
+                        <div>
 
-                    <input
-                        id="offlinePasswordConfirm"
-                        type="password"
-                        placeholder="Confirmer le mot de passe"
-                        autocomplete="new-password"
-                    >
+                            <h3>
+                                Proxy SOCKS5
+                            </h3>
 
-                </div>
+                            <p>
+                                Connexion temporaire utilisée lors de la création.
+                            </p>
+
+                        </div>
+
+                    </div>
 
 
-                <!-- ===================================
-                     PROXY SOCKS5 - HORS LIGNE
-                =================================== -->
+                    <!-- ACTIVATION -->
 
-                <div
-                    style="
-                        margin-top: 25px;
-                        padding-top: 20px;
-                        border-top: 1px solid rgba(255,255,255,0.08);
-                    "
-                >
+                    <label class="switch-line offline-proxy-switch">
 
-                    <h3
-                        style="
-                            margin: 0 0 15px 0;
-                        "
-                    >
-                        🌐 Proxy SOCKS5
-                    </h3>
+                        <div class="offline-switch-text">
 
+                            <span class="offline-switch-title">
+                                Utiliser un proxy SOCKS5
+                            </span>
 
-                    <!-- ACTIVATION PROXY -->
+                            <span class="offline-switch-description">
+                                Activer une connexion via ton proxy.
+                            </span>
 
-                    <label class="switch-line">
-
-                        <span>
-                            Utiliser un proxy SOCKS5
-                        </span>
+                        </div>
 
                         <input
                             id="offlineProxyEnabled"
@@ -505,114 +565,125 @@
 
                     <div
                         id="offlineProxyFields"
-                        style="
-                            display: none;
-                            margin-top: 15px;
-                        "
+                        class="offline-proxy-fields"
                     >
+
 
                         <!-- ADRESSE -->
 
-                        <div
-                            style="
-                                margin-top: 15px;
-                            "
-                        >
+                        <div class="offline-field">
 
-                            <label>
+                            <label for="offlineProxyHost">
                                 Adresse du proxy
                             </label>
 
-                            <input
-                                id="offlineProxyHost"
-                                type="text"
-                                placeholder="smart.eu-fra.liquidproxy.net"
-                                autocomplete="off"
-                            >
+                            <div class="offline-input-wrapper">
+
+                                <span class="offline-input-icon">
+                                    🌐
+                                </span>
+
+                                <input
+                                    id="offlineProxyHost"
+                                    type="text"
+                                    placeholder="smart.eu-fra.liquidproxy.net"
+                                    autocomplete="off"
+                                >
+
+                            </div>
 
                         </div>
 
 
                         <!-- PORT -->
 
-                        <div
-                            style="
-                                margin-top: 15px;
-                            "
-                        >
+                        <div class="offline-field">
 
-                            <label>
+                            <label for="offlineProxyPort">
                                 Port
                             </label>
 
-                            <input
-                                id="offlineProxyPort"
-                                type="number"
-                                min="1"
-                                max="65535"
-                                placeholder="1080"
-                            >
+                            <div class="offline-input-wrapper">
+
+                                <span class="offline-input-icon">
+                                    #
+                                </span>
+
+                                <input
+                                    id="offlineProxyPort"
+                                    type="number"
+                                    min="1"
+                                    max="65535"
+                                    placeholder="1080"
+                                >
+
+                            </div>
 
                         </div>
 
 
                         <!-- UTILISATEUR -->
 
-                        <div
-                            style="
-                                margin-top: 15px;
-                            "
-                        >
+                        <div class="offline-field">
 
-                            <label>
+                            <label for="offlineProxyUsername">
                                 Nom d'utilisateur proxy
                             </label>
 
-                            <input
-                                id="offlineProxyUsername"
-                                type="text"
-                                placeholder="Utilisateur"
-                                autocomplete="off"
-                            >
+                            <div class="offline-input-wrapper">
+
+                                <span class="offline-input-icon">
+                                    👤
+                                </span>
+
+                                <input
+                                    id="offlineProxyUsername"
+                                    type="text"
+                                    placeholder="Utilisateur"
+                                    autocomplete="off"
+                                >
+
+                            </div>
 
                         </div>
 
 
                         <!-- MOT DE PASSE -->
 
-                        <div
-                            style="
-                                margin-top: 15px;
-                            "
-                        >
+                        <div class="offline-field">
 
-                            <label>
+                            <label for="offlineProxyPassword">
                                 Mot de passe proxy
                             </label>
 
-                            <input
-                                id="offlineProxyPassword"
-                                type="password"
-                                placeholder="Mot de passe proxy"
-                                autocomplete="new-password"
-                            >
+                            <div class="offline-input-wrapper">
+
+                                <span class="offline-input-icon">
+                                    🔑
+                                </span>
+
+                                <input
+                                    id="offlineProxyPassword"
+                                    type="password"
+                                    placeholder="Mot de passe proxy"
+                                    autocomplete="new-password"
+                                >
+
+                            </div>
 
                         </div>
 
 
-                        <!-- INFORMATION -->
+                        <div class="proxy-info offline-proxy-info">
 
-                        <div
-                            class="proxy-info"
-                            style="
-                                margin-top: 15px;
-                            "
-                        >
+                            <span class="offline-info-icon">
+                                🔒
+                            </span>
 
-                            🔒 Les informations du proxy
-                            sont utilisées uniquement
-                            pour la connexion temporaire
-                            de création du compte.
+                            <span>
+                                Les informations du proxy sont utilisées uniquement
+                                pour la connexion temporaire de création du compte.
+                            </span>
 
                         </div>
 
@@ -625,19 +696,16 @@
                      INFORMATION REGISTER
                 =================================== -->
 
-                <div
-                    class="proxy-info"
-                    style="
-                        margin-top: 18px;
-                    "
-                >
+                <div class="proxy-info offline-register-info">
 
-                    👤 Le compte sera créé
-                    automatiquement sur le serveur
-                    avec la commande
-                    <strong>
-                        /register
-                    </strong>.
+                    <span class="offline-info-icon">
+                        👤
+                    </span>
+
+                    <span>
+                        Le compte sera créé automatiquement sur le serveur
+                        avec la commande <strong>/register</strong>.
+                    </span>
 
                 </div>
 
@@ -646,19 +714,20 @@
                      BOUTON EXECUTER
                 =================================== -->
 
-                <div
-                    class="modal-buttons"
-                    style="
-                        margin-top: 20px;
-                    "
-                >
+                <div class="offline-action">
 
                     <button
                         id="executeOfflineAccount"
-                        class="btn primary"
+                        class="btn primary offline-execute-button"
                         type="button"
                     >
-                        ▶ Exécuter
+
+                        <span>
+                            ▶
+                        </span>
+
+                        Exécuter
+
                     </button>
 
                 </div>
@@ -670,11 +739,160 @@
 
                 <div
                     id="offlineAccountResult"
-                    class="license-error hidden"
-                    style="
-                        margin-top: 15px;
-                    "
+                    class="license-error hidden offline-result"
                 ></div>
+
+            </div>
+
+
+            <!-- ===================================
+                 CARTE COMPTES CREES
+            =================================== -->
+
+            <div class="bot-card offline-list-card">
+
+
+                <!-- HEADER -->
+
+                <div class="offline-card-header">
+
+                    <div class="offline-card-icon">
+                        👥
+                    </div>
+
+                    <div>
+
+                        <div class="bot-name">
+                            Comptes créés
+                        </div>
+
+                        <div class="offline-card-description">
+                            Tes comptes enregistrés localement.
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- LISTE -->
+
+                <div
+                    id="offlineAccountsList"
+                    class="offline-accounts-list"
+                >
+
+                    <div class="offline-empty-account">
+
+                        <div class="offline-empty-icon">
+                            👤
+                        </div>
+
+                        <div class="offline-empty-title">
+                            Aucun compte créé
+                        </div>
+
+                        <div class="offline-empty-text">
+                            Les comptes que tu créeras apparaîtront ici.
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================
+                     DETAILS
+                ================================= -->
+
+                <div
+                    id="offlineAccountDetails"
+                    class="offline-account-details"
+                >
+
+
+                    <div class="offline-details-header">
+
+                        <div>
+
+                            <div class="offline-details-title">
+                                Détails du compte
+                            </div>
+
+                            <div class="offline-details-subtitle">
+                                Informations enregistrées
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PSEUDO -->
+
+                    <div class="offline-detail-item">
+
+                        <div class="offline-detail-label">
+                            Pseudo
+                        </div>
+
+                        <div
+                            id="offlineAccountDetailUsername"
+                            class="offline-detail-value"
+                        >
+                            -
+                        </div>
+
+                    </div>
+
+
+                    <!-- MOT DE PASSE -->
+
+                    <div class="offline-detail-item">
+
+                        <div class="offline-detail-label">
+                            Mot de passe
+                        </div>
+
+                        <div class="offline-password-row">
+
+                            <input
+                                id="offlineAccountDetailPassword"
+                                type="password"
+                                readonly
+                            >
+
+                            <button
+                                id="toggleOfflineAccountPassword"
+                                class="btn offline-password-toggle"
+                                type="button"
+                                title="Afficher / masquer le mot de passe"
+                            >
+                                👁
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ENVOYER VERS BOT -->
+
+                    <button
+                        id="sendOfflineAccountToBot"
+                        class="btn success offline-send-button"
+                        type="button"
+                    >
+
+                        <span>
+                            🤖
+                        </span>
+
+                        Envoyer vers un bot
+
+                    </button>
+
+                </div>
 
             </div>
 

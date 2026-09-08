@@ -27,26 +27,29 @@ contextBridge.exposeInMainWorld(
         },
 
 
-        // =========================
         // PROFILE
-        // =========================
+profileStatus: () => ipcRenderer.invoke('profile-status'),
 
-        profileStatus: () =>
-            ipcRenderer.invoke('profile-status'),
-
-        createOfflineAccount: (
+createOfflineAccount: (username, password, proxy) =>
+    ipcRenderer.invoke(
+        'create-offline-account',
+        {
             username,
             password,
             proxy
-        ) =>
-            ipcRenderer.invoke(
-                'create-offline-account',
-                {
-                    username,
-                    password,
-                    proxy
-                }
-            ),
+        }
+    ),
+
+getOfflineAccounts: () =>
+    ipcRenderer.invoke(
+        'get-offline-accounts'
+    ),
+
+saveOfflineAccount: (account) =>
+    ipcRenderer.invoke(
+        'save-offline-account',
+        account
+    ),
 
 
         // =========================

@@ -34,6 +34,19 @@ let mainWindow
 let botManager
 
 
+// =========================================
+// TEMPS DE CONNEXION DES BOTS
+// =========================================
+
+// Contient les heures de début de connexion
+// des bots actuellement en ligne.
+//
+// Exemple :
+// {
+//     "123456": 1757000000000
+// }
+const botConnectionTimes = {}
+
 
 // =========================================
 // LICENCE
@@ -46,14 +59,12 @@ const LICENSE_CHECK_INTERVAL =
     30 * 60 * 1000
 
 
-
 // =========================================
 // MISE À JOUR
 // =========================================
 
 const UPDATE_CHECK_DELAY =
     10 * 1000
-
 
 
 // =========================================
@@ -116,6 +127,20 @@ function createWindow() {
         new BotManager(
             (event, data) => {
 
+                // =================================
+                // STATISTIQUES DE CONNEXION
+                // =================================
+
+                handleBotConnectionTime(
+                    event,
+                    data
+                )
+
+
+                // =================================
+                // ENVOYER L'ÉVÉNEMENT AU RENDERER
+                // =================================
+
                 if (
                     mainWindow &&
                     !mainWindow.isDestroyed()
@@ -133,6 +158,552 @@ function createWindow() {
 
 }
 
+
+// =========================================
+// GESTION TEMPS DE CONNEXION
+// =========================================
+
+function handleBotConnectionTime(
+    event,
+    data
+) {
+
+    // Nous nous intéressons uniquement
+    // aux événements de mise à jour des bots.
+
+    if (
+        event !== 'bot-update' ||
+        !data
+    ) {
+
+        return
+
+    }
+
+
+    // =====================================
+    // RÉCUPÉRER L'ID DU BOT
+    // =====================================
+
+    const botId =
+        data.id ||
+        data.botId
+
+
+    if (!botId) {
+
+        return
+
+    }
+
+
+    // =====================================
+    // DÉTERMINER LE STATUT
+    // =====================================
+
+    const status =
+        String(
+            data.status ||
+            data.state ||
+            ''
+        ).toLowerCase()
+
+
+    // =====================================
+    // STATUTS CONSIDÉRÉS COMME EN LIGNE
+    // =====================================
+
+    const isOnline =
+        status === 'online' ||
+        status === 'connected' ||
+        status === 'connecté' ||
+        status === 'connecte'
+
+
+    // =====================================
+    // STATUTS CONSIDÉRÉS COMME HORS LIGNE
+    // =====================================
+
+    const isOffline =
+        status === 'offline' ||
+        status === 'disconnected' ||
+        status === 'déconnecté' ||
+        status === 'deconnecte' ||
+        status === 'stopped' ||
+        status === 'arrêté' ||
+        status === 'arrete'
+
+
+    // =====================================
+    // BOT CONNECTÉ
+    // =====================================
+
+    if (isOnline) {
+
+        // Si le bot était déjà considéré
+        // comme connecté, on ne recommence
+        // surtout pas le chronomètre.
+
+        if (
+            botConnectionTimes[botId]
+        ) {
+
+            return
+
+        }
+
+
+        botConnectionTimes[botId] =
+            Date.now()
+
+
+        console.log(
+            `🟢 Bot ${botId} connecté.`
+        )
+
+
+        // Sauvegarder l'heure de connexion
+        saveBotConnectionStart(
+            botId
+        )
+
+
+        return
+
+    }
+
+
+    // =====================================
+    // BOT DÉCONNECTÉ
+    // =====================================
+
+    if (isOffline) {
+
+        // Si nous n'avons aucune heure de
+        // connexion, il n'y a rien à calculer.
+
+        if (
+            !botConnectionTimes[botId]
+        ) {
+
+            return
+
+        }
+
+
+        const connectedAt =
+            botConnectionTimes[botId]
+
+
+        const disconnectedAt =
+            Date.now()
+
+
+        const sessionDuration =
+            Math.max(
+                0,
+                disconnectedAt -
+                connectedAt
+            )
+
+
+        console.log(
+            `🔴 Bot ${botId} déconnecté.`
+        )
+
+
+        console.log(
+            'Durée de la session :',
+            formatDuration(
+                sessionDuration
+            )
+        )
+
+
+        // Ajouter la durée au temps total
+        saveBotConnectionEnd(
+            botId,
+            sessionDuration,
+            disconnectedAt
+        )
+
+
+        // Supprimer le chronomètre actif
+
+        delete botConnectionTimes[botId]
+
+    }
+
+}
+
+
+// =========================================
+// FORMATER UNE DURÉE
+// =========================================
+
+function formatDuration(
+    milliseconds
+) {
+
+    const totalSeconds =
+        Math.floor(
+            milliseconds / 1000
+        )
+
+
+    const days =
+        Math.floor(
+            totalSeconds / 86400
+        )
+
+
+    const hours =
+        Math.floor(
+            (totalSeconds % 86400) /
+            3600
+        )
+
+
+    const minutes =
+        Math.floor(
+            (totalSeconds % 3600) /
+            60
+        )
+
+
+    const seconds =
+        totalSeconds % 60
+
+
+    const parts = []
+
+
+    if (days > 0) {
+
+        parts.push(
+            `${days}j`
+        )
+
+    }
+
+
+    if (
+        hours > 0 ||
+        days > 0
+    ) {
+
+        parts.push(
+            `${hours}h`
+        )
+
+    }
+
+
+    if (
+        minutes > 0 ||
+        hours > 0 ||
+        days > 0
+    ) {
+
+        parts.push(
+            `${minutes}min`
+        )
+
+    }
+
+
+    if (
+        parts.length === 0 ||
+        (
+            parts.length < 3 &&
+            seconds > 0
+        )
+    ) {
+
+        parts.push(
+            `${seconds}s`
+        )
+
+    }
+
+
+    return parts.join(' ')
+
+}
+
+
+// =========================================
+// INITIALISER LES STATISTIQUES D'UN BOT
+// =========================================
+
+function ensureBotTimeData(
+    bot
+) {
+
+    if (!bot) {
+
+        return bot
+
+    }
+
+
+    let changed = false
+
+
+    // Temps total cumulé
+
+    if (
+        typeof bot.totalOnlineTime !==
+        'number'
+    ) {
+
+        bot.totalOnlineTime = 0
+
+        changed = true
+
+    }
+
+
+    // Heure de dernière connexion
+
+    if (
+        typeof bot.lastConnectedAt ===
+        'undefined'
+    ) {
+
+        bot.lastConnectedAt = null
+
+        changed = true
+
+    }
+
+
+    // Heure de dernière déconnexion
+
+    if (
+        typeof bot.lastDisconnectedAt ===
+        'undefined'
+    ) {
+
+        bot.lastDisconnectedAt = null
+
+        changed = true
+
+    }
+
+
+    return {
+        bot,
+        changed
+    }
+
+}
+
+
+// =========================================
+// SAUVEGARDER DÉBUT CONNEXION
+// =========================================
+
+function saveBotConnectionStart(
+    botId
+) {
+
+    const bots =
+        storage.loadBots()
+
+
+    const index =
+        bots.findIndex(
+            bot =>
+                bot.id === botId
+        )
+
+
+    if (index === -1) {
+
+        return
+
+    }
+
+
+    const now =
+        new Date().toISOString()
+
+
+    const result =
+        ensureBotTimeData(
+            bots[index]
+        )
+
+
+    bots[index] =
+        result.bot
+
+
+    bots[index].lastConnectedAt =
+        now
+
+
+    // Quand le bot se reconnecte,
+    // il n'est plus considéré comme
+    // déconnecté.
+
+    bots[index].lastDisconnectedAt =
+        null
+
+
+    storage.saveBots(
+        bots
+    )
+
+}
+
+
+// =========================================
+// SAUVEGARDER FIN CONNEXION
+// =========================================
+
+function saveBotConnectionEnd(
+    botId,
+    sessionDuration,
+    disconnectedAt
+) {
+
+    const bots =
+        storage.loadBots()
+
+
+    const index =
+        bots.findIndex(
+            bot =>
+                bot.id === botId
+        )
+
+
+    if (index === -1) {
+
+        return
+
+    }
+
+
+    const result =
+        ensureBotTimeData(
+            bots[index]
+        )
+
+
+    bots[index] =
+        result.bot
+
+
+    // Ajouter la durée de cette session
+    // au temps total.
+
+    bots[index].totalOnlineTime +=
+        sessionDuration
+
+
+    // Sauvegarder la dernière déconnexion.
+
+    bots[index].lastDisconnectedAt =
+        new Date(
+            disconnectedAt
+        ).toISOString()
+
+
+    storage.saveBots(
+        bots
+    )
+
+}
+
+
+// =========================================
+// FINALISER LES SESSIONS ACTIVES
+// =========================================
+
+function finalizeActiveBotSessions() {
+
+    const now =
+        Date.now()
+
+
+    const bots =
+        storage.loadBots()
+
+
+    let changed = false
+
+
+    for (
+        const bot of bots
+    ) {
+
+        const botId =
+            bot.id
+
+
+        const connectedAt =
+            botConnectionTimes[
+                botId
+            ]
+
+
+        if (!connectedAt) {
+
+            continue
+
+        }
+
+
+        const sessionDuration =
+            Math.max(
+                0,
+                now -
+                connectedAt
+            )
+
+
+        const result =
+            ensureBotTimeData(
+                bot
+            )
+
+
+        result.bot.totalOnlineTime +=
+            sessionDuration
+
+
+        result.bot.lastDisconnectedAt =
+            new Date(
+                now
+            ).toISOString()
+
+
+        result.bot.lastConnectedAt =
+            null
+
+
+        changed = true
+
+
+        delete botConnectionTimes[
+            botId
+        ]
+
+    }
+
+
+    if (changed) {
+
+        storage.saveBots(
+            bots
+        )
+
+    }
+
+}
 
 
 // =========================================
@@ -332,7 +903,6 @@ function setupAutoUpdater() {
 }
 
 
-
 // =========================================
 // INSTALLATION DE LA MISE À JOUR
 // =========================================
@@ -388,7 +958,6 @@ ipcMain.handle(
 
     }
 )
-
 
 
 // =========================================
@@ -525,7 +1094,6 @@ ipcMain.handle(
 )
 
 
-
 // =========================================
 // PROFIL : STATUT
 // =========================================
@@ -567,7 +1135,6 @@ ipcMain.handle(
 )
 
 
-
 // =========================================
 // LICENCE : STATUT
 // =========================================
@@ -604,7 +1171,6 @@ ipcMain.handle(
 
     }
 )
-
 
 
 // =========================================
@@ -714,7 +1280,6 @@ async function checkLicense() {
 }
 
 
-
 // =========================================
 // VÉRIFICATION PÉRIODIQUE LICENCE
 // =========================================
@@ -782,7 +1347,6 @@ function startLicenseCheck() {
     )
 
 }
-
 
 
 // =========================================
@@ -1828,6 +2392,69 @@ ipcMain.handle(
                             )
 
 
+                            const accounts =
+                                storage.loadOfflineAccounts()
+
+
+                            const existingAccount =
+                                accounts.find(
+                                    account =>
+                                        account.username.toLowerCase() ===
+                                        username.toLowerCase()
+                                )
+
+
+                            if (!existingAccount) {
+
+                                const newAccount = {
+
+                                    id:
+                                        Date.now().toString(),
+
+                                    username:
+                                        username,
+
+                                    password:
+                                        password,
+
+                                    createdAt:
+                                        new Date().toISOString()
+
+                                }
+
+
+                                accounts.push(
+                                    newAccount
+                                )
+
+
+                                const saved =
+                                    storage.saveOfflineAccounts(
+                                        accounts
+                                    )
+
+
+                                if (!saved) {
+
+                                    resolve(
+                                        finish({
+
+                                            success: false,
+
+                                            error:
+                                                'Le compte a été créé sur Minecraft, mais impossible de le sauvegarder dans Gamster Bot.'
+
+                                        })
+                                    )
+
+
+                                    return
+
+                                }
+
+                            }
+
+
                             resolve(
                                 finish({
 
@@ -2046,6 +2673,134 @@ ipcMain.handle(
 )
 
 
+// =========================================
+// COMPTES HORS LIGNE
+// =========================================
+
+ipcMain.handle(
+    'get-offline-accounts',
+    () => {
+
+        return storage.loadOfflineAccounts()
+
+    }
+)
+
+
+ipcMain.handle(
+    'save-offline-account',
+    (event, account) => {
+
+        if (
+            !account ||
+            !account.username ||
+            !account.password
+        ) {
+
+            return {
+
+                success: false,
+
+                error:
+                    'Compte invalide.'
+
+            }
+
+        }
+
+
+        const accounts =
+            storage.loadOfflineAccounts()
+
+
+        // =====================================
+        // VERIFIER SI LE COMPTE EXISTE DEJA
+        // =====================================
+
+        const existing =
+            accounts.find(
+                item =>
+                    item.username.toLowerCase() ===
+                    account.username.toLowerCase()
+            )
+
+
+        if (existing) {
+
+            return {
+
+                success: false,
+
+                error:
+                    'Ce compte est déjà enregistré dans Gamster Bot.'
+
+            }
+
+        }
+
+
+        // =====================================
+        // CREER LE COMPTE
+        // =====================================
+
+        const newAccount = {
+
+            id:
+                Date.now().toString(),
+
+            username:
+                String(
+                    account.username
+                ).trim(),
+
+            password:
+                String(
+                    account.password
+                ),
+
+            createdAt:
+                new Date().toISOString()
+
+        }
+
+
+        accounts.push(
+            newAccount
+        )
+
+
+        const saved =
+            storage.saveOfflineAccounts(
+                accounts
+            )
+
+
+        if (!saved) {
+
+            return {
+
+                success: false,
+
+                error:
+                    'Impossible de sauvegarder le compte.'
+
+            }
+
+        }
+
+
+        return {
+
+            success: true,
+
+            account:
+                newAccount
+
+        }
+
+    }
+)
+
 
 // =========================================
 // BOTS
@@ -2055,11 +2810,55 @@ ipcMain.handle(
     'get-bots',
     () => {
 
-        return storage.loadBots()
+        const bots =
+            storage.loadBots()
+
+
+        let changed = false
+
+
+        // =====================================
+        // COMPATIBILITÉ ANCIENS BOTS
+        // =====================================
+
+        for (
+            let i = 0;
+            i < bots.length;
+            i++
+        ) {
+
+            const result =
+                ensureBotTimeData(
+                    bots[i]
+                )
+
+
+            bots[i] =
+                result.bot
+
+
+            if (result.changed) {
+
+                changed = true
+
+            }
+
+        }
+
+
+        if (changed) {
+
+            storage.saveBots(
+                bots
+            )
+
+        }
+
+
+        return bots
 
     }
 )
-
 
 
 ipcMain.handle(
@@ -2075,7 +2874,20 @@ ipcMain.handle(
             ...bot,
 
             id:
-                Date.now().toString()
+                Date.now().toString(),
+
+            // =================================
+            // STATISTIQUES
+            // =================================
+
+            totalOnlineTime:
+                0,
+
+            lastConnectedAt:
+                null,
+
+            lastDisconnectedAt:
+                null
 
         }
 
@@ -2094,7 +2906,6 @@ ipcMain.handle(
 
     }
 )
-
 
 
 ipcMain.handle(
@@ -2123,13 +2934,31 @@ ipcMain.handle(
         }
 
 
+        const existingBot =
+            bots[index]
+
+
         bots[index] = {
 
-            ...bots[index],
+            ...existingBot,
 
             ...data.bot
 
         }
+
+
+        // =================================
+        // NE PAS PERDRE LES STATISTIQUES
+        // =================================
+
+        const result =
+            ensureBotTimeData(
+                bots[index]
+            )
+
+
+        bots[index] =
+            result.bot
 
 
         storage.saveBots(
@@ -2150,7 +2979,6 @@ ipcMain.handle(
 )
 
 
-
 ipcMain.handle(
     'delete-bot',
     (event, id) => {
@@ -2166,6 +2994,13 @@ ipcMain.handle(
             )
 
         }
+
+
+        // Supprimer également son chrono
+
+        delete botConnectionTimes[
+            id
+        ]
 
 
         const filtered =
@@ -2188,7 +3023,6 @@ ipcMain.handle(
 
     }
 )
-
 
 
 // =========================================
@@ -2277,7 +3111,6 @@ ipcMain.handle(
 )
 
 
-
 // =========================================
 // STOP BOT
 // =========================================
@@ -2323,7 +3156,6 @@ ipcMain.handle(
 
     }
 )
-
 
 
 // =========================================
@@ -2384,6 +3216,47 @@ ipcMain.handle(
 
 
             // =================================
+            // INITIALISER LES STATISTIQUES
+            // =================================
+
+            let changed = false
+
+
+            for (
+                let i = 0;
+                i < bots.length;
+                i++
+            ) {
+
+                const result =
+                    ensureBotTimeData(
+                        bots[i]
+                    )
+
+
+                bots[i] =
+                    result.bot
+
+
+                if (result.changed) {
+
+                    changed = true
+
+                }
+
+            }
+
+
+            if (changed) {
+
+                storage.saveBots(
+                    bots
+                )
+
+            }
+
+
+            // =================================
             // LANCE TOUS LES BOTS
             // EN ARRIÈRE-PLAN
             // =================================
@@ -2437,7 +3310,6 @@ ipcMain.handle(
 )
 
 
-
 // =========================================
 // STOP ALL
 // =========================================
@@ -2478,7 +3350,6 @@ ipcMain.handle(
 
     }
 )
-
 
 
 // =========================================
@@ -2587,6 +3458,28 @@ app.whenReady().then(
     }
 )
 
+
+// =========================================
+// AVANT FERMETURE
+// =========================================
+
+app.on(
+    'before-quit',
+    () => {
+
+        console.log(
+            'Fermeture de Gamster Bot...'
+        )
+
+
+        // On sauvegarde le temps des bots
+        // qui seraient encore considérés
+        // comme connectés.
+
+        finalizeActiveBotSessions()
+
+    }
+)
 
 
 // =========================================

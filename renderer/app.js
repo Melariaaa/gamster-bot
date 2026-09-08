@@ -10,6 +10,10 @@ let logs = []
 
 let currentPage = 'bots'
 
+let offlineAccounts = []
+
+let selectedOfflineAccountId = null
+
 
 // =======================================
 // NOTIFICATION CONNEXION
@@ -52,24 +56,16 @@ function hasWaitingBot() {
 function showConnectionNotification(data) {
 
     if (!data) {
-
         return
-
     }
 
 
     if (
         data.status !== 'waiting'
     ) {
-
         return
-
     }
 
-
-    // ===================================
-    // ANNULER LA DISPARITION PREVUE
-    // ===================================
 
     if (
         connectionNotificationHideTimer
@@ -85,10 +81,6 @@ function showConnectionNotification(data) {
     }
 
 
-    // ===================================
-    // ANNULER LA SUPPRESSION PREVUE
-    // ===================================
-
     if (
         connectionNotificationRemoveTimer
     ) {
@@ -102,10 +94,6 @@ function showConnectionNotification(data) {
 
     }
 
-
-    // ===================================
-    // CREATION DE LA NOTIFICATION
-    // ===================================
 
     if (!connectionNotification) {
 
@@ -174,10 +162,6 @@ function showConnectionNotification(data) {
     }
 
 
-    // ===================================
-    // TEMPS RESTANT
-    // ===================================
-
     const seconds =
         Number(
             data.reconnectSeconds
@@ -190,10 +174,6 @@ function showConnectionNotification(data) {
             'Bot'
         )
 
-
-    // ===================================
-    // CONTENU
-    // ===================================
 
     connectionNotification.innerHTML = `
 
@@ -228,10 +208,6 @@ function showConnectionNotification(data) {
     `
 
 
-    // ===================================
-    // AFFICHER UNIQUEMENT DANS BOTS
-    // ===================================
-
     if (
         currentPage === 'bots'
     ) {
@@ -264,15 +240,9 @@ function hideConnectionNotification() {
     if (
         !connectionNotification
     ) {
-
         return
-
     }
 
-
-    // ===================================
-    // ANNULER ANCIEN TIMER
-    // ===================================
 
     if (
         connectionNotificationHideTimer
@@ -288,10 +258,6 @@ function hideConnectionNotification() {
     }
 
 
-    // ===================================
-    // ATTENDRE AVANT DE MASQUER
-    // ===================================
-
     connectionNotificationHideTimer =
         setTimeout(
             () => {
@@ -303,28 +269,16 @@ function hideConnectionNotification() {
                 if (
                     !connectionNotification
                 ) {
-
                     return
-
                 }
 
-
-                // ===================================
-                // SI UN AUTRE BOT ATTEND
-                // ===================================
 
                 if (
                     hasWaitingBot()
                 ) {
-
                     return
-
                 }
 
-
-                // ===================================
-                // SI ON EST DANS UNE AUTRE PAGE
-                // ===================================
 
                 if (
                     currentPage !== 'bots'
@@ -338,20 +292,12 @@ function hideConnectionNotification() {
                 }
 
 
-                // ===================================
-                // MASQUER
-                // ===================================
-
                 connectionNotification.style.opacity =
                     '0'
 
                 connectionNotification.style.transform =
                     'translateX(-50%) translateY(-8px)'
 
-
-                // ===================================
-                // SUPPRESSION DU DOM
-                // ===================================
 
                 if (
                     connectionNotificationRemoveTimer
@@ -400,39 +346,61 @@ function hideConnectionNotification() {
 // =======================================
 
 const botList =
-    document.getElementById('botList')
+    document.getElementById(
+        'botList'
+    )
 
 const botCount =
-    document.getElementById('botCount')
+    document.getElementById(
+        'botCount'
+    )
 
 const modal =
-    document.getElementById('modal')
+    document.getElementById(
+        'modal'
+    )
 
 const settingsModal =
-    document.getElementById('settingsModal')
+    document.getElementById(
+        'settingsModal'
+    )
 
 
 const usernameInput =
-    document.getElementById('username')
+    document.getElementById(
+        'username'
+    )
 
 const passwordInput =
-    document.getElementById('password')
+    document.getElementById(
+        'password'
+    )
 
 
 const proxyEnabled =
-    document.getElementById('proxyEnabled')
+    document.getElementById(
+        'proxyEnabled'
+    )
 
 const proxyHost =
-    document.getElementById('proxyHost')
+    document.getElementById(
+        'proxyHost'
+    )
 
 const proxyPort =
-    document.getElementById('proxyPort')
+    document.getElementById(
+        'proxyPort'
+    )
 
 const proxyUsername =
-    document.getElementById('proxyUsername')
+    document.getElementById(
+        'proxyUsername'
+    )
 
 const proxyPassword =
-    document.getElementById('proxyPassword')
+    document.getElementById(
+        'proxyPassword'
+    )
 
 
 // =======================================
@@ -440,13 +408,19 @@ const proxyPassword =
 // =======================================
 
 const profileButton =
-    document.getElementById('profileButton')
+    document.getElementById(
+        'profileButton'
+    )
 
 const profileAvatar =
-    document.getElementById('profileAvatar')
+    document.getElementById(
+        'profileAvatar'
+    )
 
 const profileUsername =
-    document.getElementById('profileUsername')
+    document.getElementById(
+        'profileUsername'
+    )
 
 
 // =======================================
@@ -454,7 +428,9 @@ const profileUsername =
 // =======================================
 
 const botsTab =
-    document.getElementById('botsTab')
+    document.getElementById(
+        'botsTab'
+    )
 
 const offlineAccountsTab =
     document.getElementById(
@@ -462,13 +438,19 @@ const offlineAccountsTab =
     )
 
 const logsTab =
-    document.getElementById('logsTab')
+    document.getElementById(
+        'logsTab'
+    )
 
 const logsPage =
-    document.getElementById('logsPage')
+    document.getElementById(
+        'logsPage'
+    )
 
 const botsPage =
-    document.getElementById('botsPage')
+    document.getElementById(
+        'botsPage'
+    )
 
 const offlineAccountsPage =
     document.getElementById(
@@ -476,7 +458,9 @@ const offlineAccountsPage =
     )
 
 const logsContainer =
-    document.getElementById('logsContainer')
+    document.getElementById(
+        'logsContainer'
+    )
 
 
 // =======================================
@@ -496,6 +480,36 @@ const offlinePassword =
 const offlinePasswordConfirm =
     document.getElementById(
         'offlinePasswordConfirm'
+    )
+
+const offlineAccountsList =
+    document.getElementById(
+        'offlineAccountsList'
+    )
+
+const offlineAccountDetails =
+    document.getElementById(
+        'offlineAccountDetails'
+    )
+
+const offlineAccountDetailUsername =
+    document.getElementById(
+        'offlineAccountDetailUsername'
+    )
+
+const offlineAccountDetailPassword =
+    document.getElementById(
+        'offlineAccountDetailPassword'
+    )
+
+const toggleOfflineAccountPassword =
+    document.getElementById(
+        'toggleOfflineAccountPassword'
+    )
+
+const sendOfflineAccountToBot =
+    document.getElementById(
+        'sendOfflineAccountToBot'
     )
 
 
@@ -530,7 +544,7 @@ const offlineProxyPassword =
 
 
 // =======================================
-// AFFICHAGE PROXY COMPTES HORS LIGNE
+// AFFICHAGE PROXY
 // =======================================
 
 const offlineProxyFields =
@@ -580,20 +594,28 @@ const offlineAccountResult =
 
 
 // =======================================
-// ELEMENTS POPUP SUPPRESSION
+// ELEMENTS SUPPRESSION
 // =======================================
 
 const deleteModal =
-    document.getElementById('deleteModal')
+    document.getElementById(
+        'deleteModal'
+    )
 
 const deleteBotName =
-    document.getElementById('deleteBotName')
+    document.getElementById(
+        'deleteBotName'
+    )
 
 const cancelDelete =
-    document.getElementById('cancelDelete')
+    document.getElementById(
+        'cancelDelete'
+    )
 
 const confirmDelete =
-    document.getElementById('confirmDelete')
+    document.getElementById(
+        'confirmDelete'
+    )
 
 
 // =======================================
@@ -602,7 +624,8 @@ const confirmDelete =
 
 function showBotsPage() {
 
-    currentPage = 'bots'
+    currentPage =
+        'bots'
 
 
     if (botsPage) {
@@ -658,11 +681,6 @@ function showBotsPage() {
 
     }
 
-
-    // ===================================
-    // REAFFICHER LA NOTIFICATION
-    // SI UN BOT ATTEND
-    // ===================================
 
     if (
         connectionNotification &&
@@ -747,10 +765,6 @@ function showOfflineAccountsPage() {
     }
 
 
-    // ===================================
-    // MASQUER LA NOTIFICATION
-    // ===================================
-
     if (
         connectionNotification
     ) {
@@ -769,7 +783,8 @@ function showOfflineAccountsPage() {
 
 function showLogsPage() {
 
-    currentPage = 'logs'
+    currentPage =
+        'logs'
 
 
     if (botsPage) {
@@ -826,10 +841,6 @@ function showLogsPage() {
     }
 
 
-    // ===================================
-    // MASQUER LA NOTIFICATION DANS LOGS
-    // ===================================
-
     if (
         connectionNotification
     ) {
@@ -846,7 +857,7 @@ function showLogsPage() {
 
 
 // =======================================
-// BOUTON BOTS
+// BOUTONS NAVIGATION
 // =======================================
 
 if (botsTab) {
@@ -860,10 +871,6 @@ if (botsTab) {
 }
 
 
-// =======================================
-// BOUTON COMPTES HORS LIGNE
-// =======================================
-
 if (offlineAccountsTab) {
 
     offlineAccountsTab.onclick = () => {
@@ -874,10 +881,6 @@ if (offlineAccountsTab) {
 
 }
 
-
-// =======================================
-// BOUTON LOGS
-// =======================================
 
 if (logsTab) {
 
@@ -896,128 +899,71 @@ if (logsTab) {
 
 if (executeOfflineAccount) {
 
-    executeOfflineAccount.onclick = async () => {
+    executeOfflineAccount.onclick =
+        async () => {
 
-        const username =
-            offlineUsername.value.trim()
+            const username =
+                offlineUsername.value.trim()
 
-        const password =
-            offlinePassword.value
+            const password =
+                offlinePassword.value
 
-        const passwordConfirm =
-            offlinePasswordConfirm.value
-
-
-        // ===================================
-        // PROXY HORS LIGNE
-        // ===================================
-
-        const proxy = {
-
-            enabled:
-                offlineProxyEnabled
-                    ? offlineProxyEnabled.checked
-                    : false,
-
-            host:
-                offlineProxyHost
-                    ? offlineProxyHost.value.trim()
-                    : '',
-
-            port:
-                offlineProxyPort
-                    ? Number(
-                        offlineProxyPort.value
-                    ) || 1080
-                    : 1080,
-
-            username:
-                offlineProxyUsername
-                    ? offlineProxyUsername.value.trim()
-                    : '',
-
-            password:
-                offlineProxyPassword
-                    ? offlineProxyPassword.value
-                    : ''
-
-        }
+            const passwordConfirm =
+                offlinePasswordConfirm.value
 
 
-        // ===================================
-        // VERIFICATION PSEUDO
-        // ===================================
+            const proxy = {
 
-        if (!username) {
+                enabled:
+                    offlineProxyEnabled
+                        ? offlineProxyEnabled.checked
+                        : false,
 
-            alert(
-                'Entre le pseudo Minecraft.'
-            )
-
-            offlineUsername.focus()
-
-            return
-
-        }
-
-
-        // ===================================
-        // VERIFICATION MOT DE PASSE
-        // ===================================
-
-        if (!password) {
-
-            alert(
-                'Entre le mot de passe serveur.'
-            )
-
-            offlinePassword.focus()
-
-            return
-
-        }
-
-
-        // ===================================
-        // CONFIRMATION MOT DE PASSE
-        // ===================================
-
-        if (
-            password !== passwordConfirm
-        ) {
-
-            alert(
-                'Les deux mots de passe ne correspondent pas.'
-            )
-
-            offlinePasswordConfirm.focus()
-
-            return
-
-        }
-
-
-        // ===================================
-        // VERIFICATION PROXY
-        // ===================================
-
-        if (
-            proxy.enabled
-        ) {
-
-            if (!proxy.host) {
-
-                alert(
-                    'Entre l’adresse du proxy SOCKS5.'
-                )
-
-                if (
+                host:
                     offlineProxyHost
-                ) {
+                        ? offlineProxyHost.value.trim()
+                        : '',
 
-                    offlineProxyHost.focus()
+                port:
+                    offlineProxyPort
+                        ? Number(
+                            offlineProxyPort.value
+                        ) || 1080
+                        : 1080,
 
-                }
+                username:
+                    offlineProxyUsername
+                        ? offlineProxyUsername.value.trim()
+                        : '',
+
+                password:
+                    offlineProxyPassword
+                        ? offlineProxyPassword.value
+                        : ''
+
+            }
+
+
+            if (!username) {
+
+                alert(
+                    'Entre le pseudo Minecraft.'
+                )
+
+                offlineUsername.focus()
+
+                return
+
+            }
+
+
+            if (!password) {
+
+                alert(
+                    'Entre le mot de passe serveur.'
+                )
+
+                offlinePassword.focus()
 
                 return
 
@@ -1025,80 +971,215 @@ if (executeOfflineAccount) {
 
 
             if (
-                !Number.isInteger(proxy.port) ||
-                proxy.port < 1 ||
-                proxy.port > 65535
+                password !== passwordConfirm
             ) {
 
                 alert(
-                    'Le port du proxy est invalide.'
+                    'Les deux mots de passe ne correspondent pas.'
                 )
 
-                if (
-                    offlineProxyPort
-                ) {
-
-                    offlineProxyPort.focus()
-
-                }
+                offlinePasswordConfirm.focus()
 
                 return
 
             }
 
-        }
-
-
-        // ===================================
-        // DESACTIVER LE BOUTON
-        // ===================================
-
-        executeOfflineAccount.disabled =
-            true
-
-        executeOfflineAccount.textContent =
-            '⏳ Création en cours...'
-
-
-        // ===================================
-        // MESSAGE RESULTAT
-        // ===================================
-
-        if (offlineAccountResult) {
-
-            offlineAccountResult.classList.add(
-                'hidden'
-            )
-
-            offlineAccountResult.textContent =
-                ''
-
-        }
-
-
-        try {
-
-            const result =
-                await window.electronAPI.createOfflineAccount(
-                    username,
-                    password,
-                    proxy
-                )
-
-
-            // ===================================
-            // SUCCES
-            // ===================================
 
             if (
-                result &&
-                result.success
+                proxy.enabled
             ) {
+
+                if (!proxy.host) {
+
+                    alert(
+                        'Entre l’adresse du proxy SOCKS5.'
+                    )
+
+                    if (
+                        offlineProxyHost
+                    ) {
+
+                        offlineProxyHost.focus()
+
+                    }
+
+                    return
+
+                }
+
+
+                if (
+                    !Number.isInteger(
+                        proxy.port
+                    ) ||
+                    proxy.port < 1 ||
+                    proxy.port > 65535
+                ) {
+
+                    alert(
+                        'Le port du proxy est invalide.'
+                    )
+
+                    if (
+                        offlineProxyPort
+                    ) {
+
+                        offlineProxyPort.focus()
+
+                    }
+
+                    return
+
+                }
+
+            }
+
+
+            executeOfflineAccount.disabled =
+                true
+
+            executeOfflineAccount.textContent =
+                '⏳ Création en cours...'
+
+
+            if (offlineAccountResult) {
+
+                offlineAccountResult.classList.add(
+                    'hidden'
+                )
+
+                offlineAccountResult.textContent =
+                    ''
+
+            }
+
+
+            try {
+
+                const result =
+                    await window.electronAPI.createOfflineAccount(
+                        username,
+                        password,
+                        proxy
+                    )
+
+
+                if (
+                    result &&
+                    result.success
+                ) {
+
+                    if (offlineAccountResult) {
+
+                        offlineAccountResult.textContent =
+                            '✅ Compte créé avec succès. Tu peux maintenant ajouter ce compte dans l’onglet Bots.'
+
+                        offlineAccountResult.classList.remove(
+                            'hidden'
+                        )
+
+                    }
+
+
+                    offlineUsername.value =
+                        ''
+
+                    offlinePassword.value =
+                        ''
+
+                    offlinePasswordConfirm.value =
+                        ''
+
+
+                    if (
+                        offlineProxyEnabled
+                    ) {
+
+                        offlineProxyEnabled.checked =
+                            false
+
+                    }
+
+
+                    if (
+                        offlineProxyFields
+                    ) {
+
+                        offlineProxyFields.style.display =
+                            'none'
+
+                    }
+
+
+                    if (
+                        offlineProxyHost
+                    ) {
+
+                        offlineProxyHost.value =
+                            ''
+
+                    }
+
+
+                    if (
+                        offlineProxyPort
+                    ) {
+
+                        offlineProxyPort.value =
+                            1080
+
+                    }
+
+
+                    if (
+                        offlineProxyUsername
+                    ) {
+
+                        offlineProxyUsername.value =
+                            ''
+
+                    }
+
+
+                    if (
+                        offlineProxyPassword
+                    ) {
+
+                        offlineProxyPassword.value =
+                            ''
+
+                    }
+
+
+                    await loadOfflineAccounts()
+
+                } else {
+
+                    throw new Error(
+                        result &&
+                        result.error
+                            ? result.error
+                            : 'Impossible de créer le compte.'
+                    )
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    'Erreur création compte hors ligne :',
+                    error
+                )
+
 
                 if (offlineAccountResult) {
 
                     offlineAccountResult.textContent =
-                        '✅ Compte créé avec succès. Tu peux maintenant ajouter ce compte dans l’onglet Bots.'
+                        '❌ ' +
+                        (
+                            error.message ||
+                            'Impossible de créer le compte.'
+                        )
 
                     offlineAccountResult.classList.remove(
                         'hidden'
@@ -1106,138 +1187,22 @@ if (executeOfflineAccount) {
 
                 }
 
-
-                // ===================================
-                // VIDER LES CHAMPS
-                // ===================================
-
-                offlineUsername.value =
-                    ''
-
-                offlinePassword.value =
-                    ''
-
-                offlinePasswordConfirm.value =
-                    ''
-
-
-                // ===================================
-                // VIDER LE PROXY
-                // ===================================
-
-                if (
-                    offlineProxyEnabled
-                ) {
-
-                    offlineProxyEnabled.checked =
-                        false
-
-                }
-
-
-                if (
-                    offlineProxyFields
-                ) {
-
-                    offlineProxyFields.style.display =
-                        'none'
-
-                }
-
-
-                if (
-                    offlineProxyHost
-                ) {
-
-                    offlineProxyHost.value =
-                        ''
-
-                }
-
-
-                if (
-                    offlineProxyPort
-                ) {
-
-                    offlineProxyPort.value =
-                        1080
-
-                }
-
-
-                if (
-                    offlineProxyUsername
-                ) {
-
-                    offlineProxyUsername.value =
-                        ''
-
-                }
-
-
-                if (
-                    offlineProxyPassword
-                ) {
-
-                    offlineProxyPassword.value =
-                        ''
-
-                }
-
-            } else {
-
-                throw new Error(
-                    result &&
-                    result.error
-                        ? result.error
-                        : 'Impossible de créer le compte.'
-                )
-
             }
 
-        } catch (error) {
 
-            console.error(
-                'Erreur création compte hors ligne :',
-                error
-            )
+            executeOfflineAccount.disabled =
+                false
 
-
-            if (offlineAccountResult) {
-
-                offlineAccountResult.textContent =
-                    '❌ ' +
-                    (
-                        error.message ||
-                        'Impossible de créer le compte.'
-                    )
-
-                offlineAccountResult.classList.remove(
-                    'hidden'
-                )
-
-            }
+            executeOfflineAccount.textContent =
+                '▶ Exécuter'
 
         }
-
-
-        // ===================================
-        // REACTIVER LE BOUTON
-        // ===================================
-
-        executeOfflineAccount.disabled =
-            false
-
-        executeOfflineAccount.textContent =
-            '▶ Exécuter'
-
-    }
 
 }
 
 
 // =======================================
-// CHARGEMENT DU PROFIL
+// CHARGEMENT PROFIL
 // =======================================
 
 async function loadProfile() {
@@ -1258,10 +1223,6 @@ async function loadProfile() {
                 result.profile
 
 
-            // ---------------------------------
-            // PSEUDO
-            // ---------------------------------
-
             if (
                 profileUsername &&
                 profile.username
@@ -1272,10 +1233,6 @@ async function loadProfile() {
 
             }
 
-
-            // ---------------------------------
-            // AVATAR
-            // ---------------------------------
 
             if (
                 profileAvatar &&
@@ -1302,7 +1259,385 @@ async function loadProfile() {
 
 
 // =======================================
-// CHARGEMENT DES BOTS
+// CHARGEMENT COMPTES HORS LIGNE
+// =======================================
+
+async function loadOfflineAccounts() {
+
+    try {
+
+        const result =
+            await window.electronAPI.getOfflineAccounts()
+
+
+        if (
+            Array.isArray(result)
+        ) {
+
+            offlineAccounts =
+                result
+
+        } else {
+
+            offlineAccounts =
+                []
+
+        }
+
+
+        renderOfflineAccounts()
+
+    } catch (error) {
+
+        console.error(
+            'Erreur lors du chargement des comptes hors ligne :',
+            error
+        )
+
+        offlineAccounts =
+            []
+
+        renderOfflineAccounts()
+
+    }
+
+}
+
+
+// =======================================
+// AFFICHER COMPTES HORS LIGNE
+// =======================================
+
+function renderOfflineAccounts() {
+
+    if (
+        !offlineAccountsList
+    ) {
+
+        return
+
+    }
+
+
+    if (
+        offlineAccounts.length === 0
+    ) {
+
+        offlineAccountsList.innerHTML = `
+
+            <div
+                style="
+                    padding: 15px;
+                    border-radius: 10px;
+                    background: rgba(255,255,255,0.03);
+                    border: 1px solid rgba(255,255,255,0.06);
+                    color: rgba(255,255,255,0.55);
+                    text-align: center;
+                "
+            >
+                Aucun compte créé pour le moment.
+            </div>
+
+        `
+
+        return
+
+    }
+
+
+    offlineAccountsList.innerHTML =
+        ''
+
+
+    offlineAccounts.forEach(
+        account => {
+
+            const item =
+                document.createElement(
+                    'div'
+                )
+
+
+            item.style.display =
+                'flex'
+
+            item.style.alignItems =
+                'center'
+
+            item.style.gap =
+                '12px'
+
+            item.style.padding =
+                '12px 15px'
+
+            item.style.borderRadius =
+                '10px'
+
+            item.style.background =
+                'rgba(255,255,255,0.03)'
+
+            item.style.border =
+                '1px solid rgba(255,255,255,0.06)'
+
+            item.style.cursor =
+                'pointer'
+
+            item.style.transition =
+                'background 0.2s ease, border 0.2s ease'
+
+
+            const avatar =
+                document.createElement(
+                    'img'
+                )
+
+
+            avatar.src =
+                `https://mc-heads.net/avatar/${encodeURIComponent(account.username)}/40`
+
+
+            avatar.alt =
+                account.username
+
+
+            avatar.width =
+                40
+
+            avatar.height =
+                40
+
+
+            avatar.style.width =
+                '40px'
+
+            avatar.style.height =
+                '40px'
+
+            avatar.style.imageRendering =
+                'pixelated'
+
+            avatar.style.borderRadius =
+                '6px'
+
+
+            const name =
+                document.createElement(
+                    'div'
+                )
+
+
+            name.textContent =
+                account.username
+
+
+            name.style.fontWeight =
+                '600'
+
+            name.style.fontSize =
+                '14px'
+
+            name.style.color =
+                '#ffffff'
+
+
+            item.appendChild(
+                avatar
+            )
+
+            item.appendChild(
+                name
+            )
+
+
+            item.onclick =
+                () => {
+
+                    selectOfflineAccount(
+                        account.id
+                    )
+
+                }
+
+
+            offlineAccountsList.appendChild(
+                item
+            )
+
+        }
+    )
+
+}
+
+
+// =======================================
+// SELECTIONNER COMPTE
+// =======================================
+
+function selectOfflineAccount(id) {
+
+    const account =
+        offlineAccounts.find(
+            item =>
+                item.id === id
+        )
+
+
+    if (!account) {
+
+        return
+
+    }
+
+
+    selectedOfflineAccountId =
+        account.id
+
+
+    if (
+        offlineAccountDetails
+    ) {
+
+        offlineAccountDetails.style.display =
+            'block'
+
+    }
+
+
+    if (
+        offlineAccountDetailUsername
+    ) {
+
+        offlineAccountDetailUsername.textContent =
+            account.username
+
+    }
+
+
+    if (
+        offlineAccountDetailPassword
+    ) {
+
+        offlineAccountDetailPassword.value =
+            account.password
+
+        offlineAccountDetailPassword.type =
+            'password'
+
+    }
+
+
+    if (
+        toggleOfflineAccountPassword
+    ) {
+
+        toggleOfflineAccountPassword.textContent =
+            '👁'
+
+    }
+
+}
+
+
+// =======================================
+// AFFICHER / MASQUER MOT DE PASSE
+// =======================================
+
+if (
+    toggleOfflineAccountPassword
+) {
+
+    toggleOfflineAccountPassword.onclick =
+        () => {
+
+            if (
+                !offlineAccountDetailPassword
+            ) {
+
+                return
+
+            }
+
+
+            if (
+                offlineAccountDetailPassword.type ===
+                'password'
+            ) {
+
+                offlineAccountDetailPassword.type =
+                    'text'
+
+                toggleOfflineAccountPassword.textContent =
+                    '🙈'
+
+            } else {
+
+                offlineAccountDetailPassword.type =
+                    'password'
+
+                toggleOfflineAccountPassword.textContent =
+                    '👁'
+
+            }
+
+        }
+
+}
+
+
+// =======================================
+// ENVOYER COMPTE VERS BOT
+// =======================================
+
+if (
+    sendOfflineAccountToBot
+) {
+
+    sendOfflineAccountToBot.onclick =
+        () => {
+
+            const account =
+                offlineAccounts.find(
+                    item =>
+                        item.id ===
+                        selectedOfflineAccountId
+                )
+
+
+            if (!account) {
+
+                alert(
+                    'Sélectionne d’abord un compte.'
+                )
+
+                return
+
+            }
+
+
+            showBotsPage()
+
+
+            usernameInput.value =
+                account.username
+
+            passwordInput.value =
+                account.password
+
+
+            modal.classList.remove(
+                'hidden'
+            )
+
+
+            usernameInput.focus()
+
+        }
+
+}
+
+
+// =======================================
+// CHARGEMENT BOTS
 // =======================================
 
 async function loadBots() {
@@ -1313,13 +1648,17 @@ async function loadBots() {
             await window.electronAPI.getBots()
 
 
-        if (Array.isArray(result)) {
+        if (
+            Array.isArray(result)
+        ) {
 
-            bots = result
+            bots =
+                result
 
         } else {
 
-            bots = []
+            bots =
+                []
 
         }
 
@@ -1333,7 +1672,8 @@ async function loadBots() {
             error
         )
 
-        bots = []
+        bots =
+            []
 
         render()
 
@@ -1343,7 +1683,7 @@ async function loadBots() {
 
 
 // =======================================
-// BOUTON LANCER / ARRETER TOUT
+// BOUTON TOUS LES BOTS
 // =======================================
 
 function updateToggleAllButton() {
@@ -1353,12 +1693,10 @@ function updateToggleAllButton() {
             'toggleAllBots'
         )
 
-
     const icon =
         document.getElementById(
             'toggleAllIcon'
         )
-
 
     const text =
         document.getElementById(
@@ -1378,39 +1716,40 @@ function updateToggleAllButton() {
 
 
     const hasRunningBot =
-        bots.some(bot => {
+        bots.some(
+            bot => {
 
-            const state =
-                states[bot.id]
+                const state =
+                    states[bot.id]
 
 
-            return (
-                state &&
-                (
-                    state.status === 'connected' ||
-                    state.status === 'connecting' ||
-                    state.status === 'waiting' ||
-                    state.status === 'reconnecting'
+                return (
+                    state &&
+                    (
+                        state.status === 'connected' ||
+                        state.status === 'connecting' ||
+                        state.status === 'waiting' ||
+                        state.status === 'reconnecting'
+                    )
                 )
-            )
 
-        })
+            }
+        )
 
 
-    if (hasRunningBot) {
+    if (
+        hasRunningBot
+    ) {
 
         icon.textContent =
             '■'
 
-
         text.textContent =
             'Arrêter tout'
-
 
         button.classList.add(
             'danger'
         )
-
 
         button.classList.remove(
             'success'
@@ -1421,15 +1760,12 @@ function updateToggleAllButton() {
         icon.textContent =
             '▶'
 
-
         text.textContent =
             'Lancer tout'
-
 
         button.classList.add(
             'success'
         )
-
 
         button.classList.remove(
             'danger'
@@ -1441,7 +1777,7 @@ function updateToggleAllButton() {
 
 
 // =======================================
-// AFFICHAGE
+// AFFICHAGE BOTS
 // =======================================
 
 function render() {
@@ -1493,135 +1829,136 @@ function render() {
 
         updateToggleAllButton()
 
-
         return
 
     }
 
 
-    botList.innerHTML = ''
+    botList.innerHTML =
+        ''
 
 
-    bots.forEach(bot => {
+    bots.forEach(
+        bot => {
 
-        const state =
-            states[bot.id] || {
+            const state =
+                states[bot.id] || {
 
-                status:
-                    'stopped',
+                    status:
+                        'stopped',
 
-                startTime:
-                    null,
+                    startTime:
+                        null,
 
-                reconnectSeconds:
-                    null
+                    reconnectSeconds:
+                        null
 
-            }
-
-
-        const card =
-            document.createElement(
-                'div'
-            )
+                }
 
 
-        card.className =
-            'bot-card'
+            const card =
+                document.createElement(
+                    'div'
+                )
 
 
-        // ===================================
-        // IDENTIFIANT DE LA CARTE
-        // ===================================
-
-        card.dataset.botId =
-            bot.id
+            card.className =
+                'bot-card'
 
 
-        card.innerHTML = `
+            card.dataset.botId =
+                bot.id
 
-            <div class="bot-header">
 
-                <div class="bot-name">
-                    🤖 ${escapeHtml(
-                        bot.username
+            card.innerHTML = `
+
+                <div class="bot-header">
+
+                    <div class="bot-name">
+                        🤖 ${escapeHtml(
+                            bot.username
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div class="status">
+
+                    ${getStatus(
+                        state.status,
+                        state
+                    )}
+
+                </div>
+
+
+                <div class="time-title">
+
+                    Temps sur le serveur
+
+                </div>
+
+
+                <div
+                    class="time"
+                    id="time-${bot.id}"
+                >
+                    ${getTime(
+                        state,
+                        bot
                     )}
                 </div>
 
-            </div>
+
+                <div class="bot-buttons">
+
+                    <button
+                        class="btn success"
+                        onclick="startBot('${bot.id}')"
+                    >
+                        ▶
+                        Lancer
+                    </button>
 
 
-            <div class="status">
-
-                ${getStatus(
-                    state.status,
-                    state
-                )}
-
-            </div>
-
-
-            <div class="time-title">
-
-                Temps sur le serveur
-
-            </div>
+                    <button
+                        class="btn danger"
+                        onclick="stopBot('${bot.id}')"
+                    >
+                        ■
+                        Arrêter
+                    </button>
 
 
-            <div
-                class="time"
-                id="time-${bot.id}"
-            >
-                ${getTime(state)}
-            </div>
+                    <button
+                        class="btn"
+                        onclick="openSettings('${bot.id}')"
+                        title="Paramètres"
+                    >
+                        ⚙
+                    </button>
 
 
-            <div class="bot-buttons">
+                    <button
+                        class="btn delete-btn"
+                        onclick="openDeleteConfirm('${bot.id}')"
+                        title="Supprimer le bot"
+                    >
+                        🗑
+                    </button>
 
-                <button
-                    class="btn success"
-                    onclick="startBot('${bot.id}')"
-                >
-                    ▶
-                    Lancer
-                </button>
+                </div>
 
-
-                <button
-                    class="btn danger"
-                    onclick="stopBot('${bot.id}')"
-                >
-                    ■
-                    Arrêter
-                </button>
+            `
 
 
-                <button
-                    class="btn"
-                    onclick="openSettings('${bot.id}')"
-                    title="Paramètres"
-                >
-                    ⚙
-                </button>
+            botList.appendChild(
+                card
+            )
 
-
-                <button
-                    class="btn delete-btn"
-                    onclick="openDeleteConfirm('${bot.id}')"
-                    title="Supprimer le bot"
-                >
-                    🗑
-                </button>
-
-            </div>
-
-        `
-
-
-        botList.appendChild(
-            card
-        )
-
-    })
+        }
+    )
 
 
     updateToggleAllButton()
@@ -1630,7 +1967,7 @@ function render() {
 
 
 // =======================================
-// STATUT
+// STATUT BOT
 // =======================================
 
 function getStatus(
@@ -1706,26 +2043,57 @@ function getStatus(
 
 
 // =======================================
-// TEMPS
+// TEMPS TOTAL
 // =======================================
 
-function getTime(state) {
+function getTime(
+    state,
+    bot
+) {
+
+    let totalMilliseconds =
+        0
+
+
+    // =====================================
+    // TEMPS DEJA SAUVEGARDE
+    // =====================================
 
     if (
-        !state.startTime
+        bot &&
+        typeof bot.totalOnlineTime ===
+        'number'
     ) {
 
-        return '00:00:00'
+        totalMilliseconds =
+            bot.totalOnlineTime
+
+    }
+
+
+    // =====================================
+    // SESSION ACTUELLE
+    // =====================================
+
+    if (
+        state &&
+        state.startTime
+    ) {
+
+        totalMilliseconds +=
+            Math.max(
+                0,
+                Date.now() -
+                state.startTime
+            )
 
     }
 
 
     const seconds =
         Math.floor(
-            (
-                Date.now() -
-                state.startTime
-            ) / 1000
+            totalMilliseconds /
+            1000
         )
 
 
@@ -1741,6 +2109,15 @@ function getTime(state) {
 // =======================================
 
 function formatTime(seconds) {
+
+    seconds =
+        Math.max(
+            0,
+            Math.floor(
+                Number(seconds) || 0
+            )
+        )
+
 
     const hours =
         Math.floor(
@@ -1781,7 +2158,7 @@ function formatTime(seconds) {
 
 
 // =======================================
-// COMPTEUR TEMPS
+// ACTUALISATION TEMPS
 // =======================================
 
 setInterval(
@@ -1794,10 +2171,7 @@ setInterval(
                     states[bot.id]
 
 
-                if (
-                    !state ||
-                    !state.startTime
-                ) {
+                if (!state) {
 
                     return
 
@@ -1813,7 +2187,10 @@ setInterval(
                 if (element) {
 
                     element.textContent =
-                        getTime(state)
+                        getTime(
+                            state,
+                            bot
+                        )
 
                 }
 
@@ -1881,106 +2258,106 @@ document.getElementById(
 
 document.getElementById(
     'save'
-).onclick = async () => {
+).onclick =
+    async () => {
 
-    const username =
-        usernameInput.value.trim()
+        const username =
+            usernameInput.value.trim()
 
-
-    const password =
-        passwordInput.value
-
-
-    if (!username) {
-
-        alert(
-            'Entre le pseudo du bot.'
-        )
-
-        return
-
-    }
+        const password =
+            passwordInput.value
 
 
-    if (!password) {
+        if (!username) {
 
-        alert(
-            'Entre le mot de passe.'
-        )
+            alert(
+                'Entre le pseudo du bot.'
+            )
 
-        return
+            return
 
-    }
+        }
 
 
-    const bot = {
+        if (!password) {
 
-        id:
-            crypto.randomUUID(),
+            alert(
+                'Entre le mot de passe.'
+            )
 
-        username:
-            username,
+            return
 
-        password:
-            password,
+        }
 
-        proxy: {
 
-            enabled:
-                false,
+        const bot = {
 
-            host:
-                '',
-
-            port:
-                1080,
+            id:
+                crypto.randomUUID(),
 
             username:
-                '',
+                username,
 
             password:
-                ''
+                password,
+
+            proxy: {
+
+                enabled:
+                    false,
+
+                host:
+                    '',
+
+                port:
+                    1080,
+
+                username:
+                    '',
+
+                password:
+                    ''
+
+            }
+
+        }
+
+
+        try {
+
+            const newBot =
+                await window.electronAPI.addBot(
+                    bot
+                )
+
+
+            if (newBot) {
+
+                bots.push(
+                    newBot
+                )
+
+            }
+
+
+            closeModal()
+
+            render()
+
+        } catch (error) {
+
+            console.error(
+                'Erreur lors de l’ajout :',
+                error
+            )
+
+            alert(
+                'Impossible d’ajouter le bot.'
+            )
 
         }
 
     }
-
-
-    try {
-
-        const newBot =
-            await window.electronAPI.addBot(
-                bot
-            )
-
-
-        if (newBot) {
-
-            bots.push(
-                newBot
-            )
-
-        }
-
-
-        closeModal()
-
-        render()
-
-    } catch (error) {
-
-        console.error(
-            'Erreur lors de l’ajout :',
-            error
-        )
-
-        alert(
-            'Impossible d’ajouter le bot.'
-        )
-
-    }
-
-}
 
 
 // =======================================
@@ -2104,109 +2481,110 @@ document.getElementById(
 
 document.getElementById(
     'saveSettings'
-).onclick = async () => {
+).onclick =
+    async () => {
 
-    const bot =
-        bots.find(
-            b => b.id === selectedBotId
-        )
-
-
-    if (!bot) {
-
-        return
-
-    }
-
-
-    const updatedBot = {
-
-        ...bot,
-
-        proxy: {
-
-            enabled:
-                proxyEnabled.checked,
-
-            host:
-                proxyHost.value.trim(),
-
-            port:
-                parseInt(
-                    proxyPort.value
-                ) || 1080,
-
-            username:
-                proxyUsername.value.trim(),
-
-            password:
-                proxyPassword.value
-
-        }
-
-    }
-
-
-    try {
-
-        const result =
-            await window.electronAPI.updateBot(
-                bot.id,
-                updatedBot
+        const bot =
+            bots.find(
+                b => b.id === selectedBotId
             )
 
 
-        if (
-            !result ||
-            !result.success
-        ) {
+        if (!bot) {
 
-            throw new Error(
-                'La sauvegarde du bot a échoué.'
-            )
+            return
 
         }
 
 
-        const index =
-            bots.findIndex(
-                b => b.id === bot.id
-            )
+        const updatedBot = {
 
+            ...bot,
 
-        if (
-            index !== -1
-        ) {
+            proxy: {
 
-            bots[index] =
-                result.bot ||
-                updatedBot
+                enabled:
+                    proxyEnabled.checked,
+
+                host:
+                    proxyHost.value.trim(),
+
+                port:
+                    parseInt(
+                        proxyPort.value
+                    ) || 1080,
+
+                username:
+                    proxyUsername.value.trim(),
+
+                password:
+                    proxyPassword.value
+
+            }
 
         }
 
 
-        closeSettings()
+        try {
 
-        render()
+            const result =
+                await window.electronAPI.updateBot(
+                    bot.id,
+                    updatedBot
+                )
 
-    } catch (error) {
 
-        console.error(
-            'Erreur sauvegarde paramètres :',
-            error
-        )
+            if (
+                !result ||
+                !result.success
+            ) {
 
-        alert(
-            'Impossible de sauvegarder les paramètres.'
-        )
+                throw new Error(
+                    'La sauvegarde du bot a échoué.'
+                )
+
+            }
+
+
+            const index =
+                bots.findIndex(
+                    b => b.id === bot.id
+                )
+
+
+            if (
+                index !== -1
+            ) {
+
+                bots[index] =
+                    result.bot ||
+                    updatedBot
+
+            }
+
+
+            closeSettings()
+
+            render()
+
+        } catch (error) {
+
+            console.error(
+                'Erreur sauvegarde paramètres :',
+                error
+            )
+
+            alert(
+                'Impossible de sauvegarder les paramètres.'
+            )
+
+        }
 
     }
-
-}
 
 
 // =======================================
-// OUVRIR POPUP SUPPRESSION
+// OUVRIR SUPPRESSION
 // =======================================
 
 function openDeleteConfirm(id) {
@@ -2239,8 +2617,12 @@ function openDeleteConfirm(id) {
 }
 
 
+window.openDeleteConfirm =
+    openDeleteConfirm
+
+
 // =======================================
-// FERMER POPUP SUPPRESSION
+// FERMER SUPPRESSION
 // =======================================
 
 function closeDeleteConfirm() {
@@ -2256,10 +2638,6 @@ function closeDeleteConfirm() {
 }
 
 
-// =======================================
-// BOUTON ANNULER SUPPRESSION
-// =======================================
-
 cancelDelete.onclick =
     closeDeleteConfirm
 
@@ -2268,93 +2646,86 @@ cancelDelete.onclick =
 // CONFIRMER SUPPRESSION
 // =======================================
 
-confirmDelete.onclick = async () => {
+confirmDelete.onclick =
+    async () => {
 
-    if (
-        !botToDeleteId
-    ) {
+        if (
+            !botToDeleteId
+        ) {
 
-        return
+            return
 
-    }
-
-
-    const id =
-        botToDeleteId
+        }
 
 
-    closeDeleteConfirm()
+        const id =
+            botToDeleteId
 
 
-    try {
-
-        await window.electronAPI.stopBot(
-            id
-        )
-
-    } catch (error) {
-
-        console.log(
-            'Le bot était peut-être déjà arrêté.'
-        )
-
-    }
+        closeDeleteConfirm()
 
 
-    try {
+        try {
 
-        const result =
-            await window.electronAPI.deleteBot(
+            await window.electronAPI.stopBot(
                 id
             )
 
+        } catch (error) {
 
-        if (
-            !result ||
-            !result.success
-        ) {
-
-            throw new Error(
-                'La suppression a échoué.'
+            console.log(
+                'Le bot était peut-être déjà arrêté.'
             )
 
         }
 
 
-        bots =
-            bots.filter(
-                bot =>
-                    bot.id !== id
+        try {
+
+            const result =
+                await window.electronAPI.deleteBot(
+                    id
+                )
+
+
+            if (
+                !result ||
+                !result.success
+            ) {
+
+                throw new Error(
+                    'La suppression a échoué.'
+                )
+
+            }
+
+
+            bots =
+                bots.filter(
+                    bot =>
+                        bot.id !== id
+                )
+
+
+            delete states[id]
+
+
+            render()
+
+        } catch (error) {
+
+            console.error(
+                'Erreur suppression bot :',
+                error
             )
 
+            alert(
+                'Impossible de supprimer le bot.'
+            )
 
-        delete states[id]
-
-
-        render()
-
-    } catch (error) {
-
-        console.error(
-            'Erreur suppression bot :',
-            error
-        )
-
-        alert(
-            'Impossible de supprimer le bot.'
-        )
+        }
 
     }
-
-}
-
-
-// =======================================
-// FONCTION GLOBALE POPUP
-// =======================================
-
-window.openDeleteConfirm =
-    openDeleteConfirm
 
 
 // =======================================
@@ -2472,88 +2843,91 @@ const toggleAllBots =
     )
 
 
-if (toggleAllBots) {
+if (
+    toggleAllBots
+) {
 
-    toggleAllBots.onclick = async () => {
+    toggleAllBots.onclick =
+        async () => {
 
-        const hasRunningBot =
-            bots.some(
-                bot => {
+            const hasRunningBot =
+                bots.some(
+                    bot => {
 
-                    const state =
-                        states[bot.id]
+                        const state =
+                            states[bot.id]
 
 
-                    return (
-                        state &&
+                        return (
+                            state &&
+                            (
+                                state.status === 'connected' ||
+                                state.status === 'connecting' ||
+                                state.status === 'waiting' ||
+                                state.status === 'reconnecting'
+                            )
+                        )
+
+                    }
+                )
+
+
+            try {
+
+                let result
+
+
+                if (
+                    hasRunningBot
+                ) {
+
+                    result =
+                        await window.electronAPI.stopAll()
+
+                } else {
+
+                    result =
+                        await window.electronAPI.startAll()
+
+                }
+
+
+                if (
+                    result &&
+                    !result.success
+                ) {
+
+                    alert(
+                        result.error ||
                         (
-                            state.status === 'connected' ||
-                            state.status === 'connecting' ||
-                            state.status === 'waiting' ||
-                            state.status === 'reconnecting'
+                            hasRunningBot
+                                ? 'Impossible d’arrêter les bots.'
+                                : 'Impossible de lancer les bots.'
                         )
                     )
 
                 }
-            )
 
+            } catch (error) {
 
-        try {
+                console.error(
+                    'Erreur action sur tous les bots :',
+                    error
+                )
 
-            let result
-
-
-            if (
-                hasRunningBot
-            ) {
-
-                result =
-                    await window.electronAPI.stopAll()
-
-            } else {
-
-                result =
-                    await window.electronAPI.startAll()
-
-            }
-
-
-            if (
-                result &&
-                !result.success
-            ) {
 
                 alert(
-                    result.error ||
-                    (
-                        hasRunningBot
-                            ? 'Impossible d’arrêter les bots.'
-                            : 'Impossible de lancer les bots.'
-                    )
+                    hasRunningBot
+                        ? 'Impossible d’arrêter les bots.'
+                        : 'Impossible de lancer les bots.'
                 )
 
             }
 
-        } catch (error) {
 
-            console.error(
-                'Erreur action sur tous les bots :',
-                error
-            )
-
-
-            alert(
-                hasRunningBot
-                    ? 'Impossible d’arrêter les bots.'
-                    : 'Impossible de lancer les bots.'
-            )
+            updateToggleAllButton()
 
         }
-
-
-        updateToggleAllButton()
-
-    }
 
 }
 
@@ -2561,17 +2935,12 @@ if (toggleAllBots) {
 // =======================================
 // LOGS
 // =======================================
-//
-// Les logs Minecraft restent dans la
-// console développeur.
-//
-// L'onglet Logs est réservé aux
-// mises à jour de Gamster Bot.
-//
 
 function renderLogs() {
 
-    if (!logsContainer) {
+    if (
+        !logsContainer
+    ) {
 
         return
 
@@ -2579,6 +2948,134 @@ function renderLogs() {
 
 
     logsContainer.innerHTML = `
+
+        <!-- ================================= -->
+        <!-- GAMSTER BOT 1.0.8 -->
+        <!-- ================================= -->
+
+        <div class="update-log-card">
+
+            <div class="update-log-header">
+
+                <div class="update-log-icon">
+                    ✨
+                </div>
+
+                <div>
+
+                    <h3>
+                        Gamster Bot 1.0.8
+                    </h3>
+
+                    <span>
+                        Nouvelles fonctionnalités
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="update-log-content">
+
+                <h4>
+                    ⏱️ Temps de connexion
+                </h4>
+
+                <ul>
+
+                    <li>
+                        Ajout du compteur de temps sur le serveur
+                    </li>
+
+                    <li>
+                        Sauvegarde permanente du temps total
+                    </li>
+
+                    <li>
+                        Conservation du temps après redémarrage
+                    </li>
+
+                </ul>
+
+
+                <h4>
+                    🤖 Gestion des bots
+                </h4>
+
+                <ul>
+
+                    <li>
+                        Amélioration du lancement et de l’arrêt des bots
+                    </li>
+
+                    <li>
+                        Gestion de plusieurs bots simultanément
+                    </li>
+
+                    <li>
+                        Affichage amélioré de l’état des bots
+                    </li>
+
+                </ul>
+
+
+                <h4>
+                    🎨 Interface
+                </h4>
+
+                <ul>
+
+                    <li>
+                        Amélioration générale de l’interface
+                    </li>
+
+                    <li>
+                        Nouvelle organisation des sections
+                    </li>
+
+                    <li>
+                        Ajout de notifications et d’indicateurs d’état
+                    </li>
+
+                </ul>
+
+
+                <h4>
+                    🛠️ Stabilité
+                </h4>
+
+                <ul>
+
+                    <li>
+                        Amélioration de la sauvegarde des données
+                    </li>
+
+                    <li>
+                        Conservation des configurations après redémarrage
+                    </li>
+
+                    <li>
+                        Améliorations générales de stabilité
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+            <div class="update-log-footer">
+
+                📅 8 septembre 2026
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================= -->
+        <!-- GAMSTER BOT 1.0.0 -->
+        <!-- ================================= -->
 
         <div class="update-log-card">
 
@@ -2746,23 +3243,38 @@ window.electronAPI.onBotUpdate(
         }
 
 
+        const previousState =
+            states[data.id]
+
+
+        let startTime =
+            data.startTime
+
+
+        if (
+            !startTime &&
+            previousState
+        ) {
+
+            startTime =
+                previousState.startTime
+
+        }
+
+
         states[data.id] = {
 
             status:
                 data.status,
 
             startTime:
-                data.startTime,
+                startTime || null,
 
             reconnectSeconds:
                 data.reconnectSeconds
 
         }
 
-
-        // ===================================
-        // NOTIFICATION
-        // ===================================
 
         if (
             data.status === 'waiting'
@@ -2779,20 +3291,11 @@ window.electronAPI.onBotUpdate(
         }
 
 
-        // ===================================
-        // CHERCHER LA CARTE DU BOT
-        // ===================================
-
         const botCard =
             document.querySelector(
                 `[data-bot-id="${data.id}"]`
             )
 
-
-        // ===================================
-        // SI LA CARTE N'EXISTE PAS
-        // ON FAIT UN RENDER COMPLET
-        // ===================================
 
         if (!botCard) {
 
@@ -2803,17 +3306,15 @@ window.electronAPI.onBotUpdate(
         }
 
 
-        // ===================================
-        // METTRE A JOUR UNIQUEMENT LE STATUT
-        // ===================================
-
         const statusElement =
             botCard.querySelector(
                 '.status'
             )
 
 
-        if (statusElement) {
+        if (
+            statusElement
+        ) {
 
             statusElement.textContent =
                 getStatus(
@@ -2824,29 +3325,31 @@ window.electronAPI.onBotUpdate(
         }
 
 
-        // ===================================
-        // METTRE A JOUR UNIQUEMENT LE TEMPS
-        // ===================================
-
         const timeElement =
             botCard.querySelector(
                 '.time'
             )
 
 
-        if (timeElement) {
+        if (
+            timeElement
+        ) {
+
+            const bot =
+                bots.find(
+                    item =>
+                        item.id === data.id
+                )
+
 
             timeElement.textContent =
                 getTime(
-                    data
+                    states[data.id],
+                    bot
                 )
 
         }
 
-
-        // ===================================
-        // METTRE A JOUR LE BOUTON GLOBAL
-        // ===================================
 
         updateToggleAllButton()
 
@@ -2855,7 +3358,7 @@ window.electronAPI.onBotUpdate(
 
 
 // =======================================
-// LOGS TECHNIQUES DES BOTS
+// LOGS TECHNIQUES
 // =======================================
 
 window.electronAPI.onBotLog(
@@ -2906,3 +3409,5 @@ showBotsPage()
 loadProfile()
 
 loadBots()
+
+loadOfflineAccounts()
