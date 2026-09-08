@@ -7,6 +7,21 @@ class BotManager {
         this.send = send
 
         this.bots = new Map()
+
+        // Bots actuellement en attente
+        // avant leur connexion
+        this.pendingStarts = new Map()
+
+        // =======================================
+        // DELAI DE CONNEXION
+        // =======================================
+
+        // Minimum : 15 secondes
+        this.minConnectionDelay = 15000
+
+        // Maximum : 30 secondes
+        this.maxConnectionDelay = 30000
+
     }
 
 
@@ -14,33 +29,283 @@ class BotManager {
     // LANCER UN BOT
     // =======================================
 
-    startBot(data) {
+    async startBot(data) {
 
+        // Déjà connecté / en cours de connexion
         if (this.bots.has(data.id)) {
+
             return false
+
         }
 
 
-        const bot = new MinecraftBot(
+        // Déjà en attente
+        if (
+            this.pendingStarts.has(data.id)
+        ) {
 
-            data,
+            return false
 
-            (update) => {
+        }
 
-                this.send(
-                    'bot-update',
-                    update
-                )
-            },
 
-            (log) => {
+        // =======================================
+        // CHOISIR LE DELAI
+        // =======================================
 
-                this.send(
-                    'bot-log',
-                    log
-                )
+        const delay =
+            this.getRandomDelay()
+
+
+        const totalSeconds =
+            Math.ceil(
+                delay / 1000
+            )
+
+
+        // =======================================
+        // ENREGISTRER L'ATTENTE
+        // =======================================
+
+        const startData = {
+
+            cancelled:
+                false,
+
+            timer:
+                null,
+
+            countdownTimer:
+                null
+
+        }
+
+
+        this.pendingStarts.set(
+            data.id,
+            startData
+        )
+
+
+        // =======================================
+        // NOTIFICATION INITIALE
+        // =======================================
+
+        this.send(
+            'bot-update',
+            {
+                id:
+                    data.id,
+
+                status:
+                    'waiting',
+
+                startTime:
+                    null,
+
+                reconnectSeconds:
+                    totalSeconds,
+
+                connectionDelay:
+                    totalSeconds,
+
+                username:
+                    data.username
             }
         )
+
+
+        // =======================================
+        // COMPTE A REBOURS
+        // =======================================
+
+        let remaining =
+            totalSeconds
+
+
+        startData.countdownTimer =
+            setInterval(
+                () => {
+
+                    const current =
+                        this.pendingStarts.get(
+                            data.id
+                        )
+
+
+                    if (
+                        !current ||
+                        current.cancelled
+                    ) {
+
+                        return
+
+                    }
+
+
+                    remaining--
+
+
+                    if (
+                        remaining <= 0
+                    ) {
+
+                        clearInterval(
+                            startData.countdownTimer
+                        )
+
+                        startData.countdownTimer =
+                            null
+
+                        return
+
+                    }
+
+
+                    this.send(
+                        'bot-update',
+                        {
+                            id:
+                                data.id,
+
+                            status:
+                                'waiting',
+
+                            startTime:
+                                null,
+
+                            reconnectSeconds:
+                                remaining,
+
+                            connectionDelay:
+                                remaining,
+
+                            username:
+                                data.username
+                        }
+                    )
+
+                },
+                1000
+            )
+
+
+        // =======================================
+        // ATTENDRE
+        // =======================================
+
+        await new Promise(
+            resolve => {
+
+                startData.timer =
+                    setTimeout(
+                        resolve,
+                        delay
+                    )
+
+            }
+        )
+
+
+        // =======================================
+        // RECUPERER L'ATTENTE
+        // =======================================
+
+        const current =
+            this.pendingStarts.get(
+                data.id
+            )
+
+
+        // =======================================
+        // ANNULATION
+        // =======================================
+
+        if (
+            !current ||
+            current.cancelled
+        ) {
+
+            if (
+                startData.countdownTimer
+            ) {
+
+                clearInterval(
+                    startData.countdownTimer
+                )
+
+            }
+
+
+            this.pendingStarts.delete(
+                data.id
+            )
+
+
+            return false
+
+        }
+
+
+        // =======================================
+        // NETTOYAGE
+        // =======================================
+
+        if (
+            startData.countdownTimer
+        ) {
+
+            clearInterval(
+                startData.countdownTimer
+            )
+
+        }
+
+
+        this.pendingStarts.delete(
+            data.id
+        )
+
+
+        // =======================================
+        // VERIFICATION
+        // =======================================
+
+        if (
+            this.bots.has(data.id)
+        ) {
+
+            return false
+
+        }
+
+
+        // =======================================
+        // CREATION DU BOT
+        // =======================================
+
+        const bot =
+            new MinecraftBot(
+                data,
+
+                (update) => {
+
+                    this.send(
+                        'bot-update',
+                        update
+                    )
+
+                },
+
+                (log) => {
+
+                    this.send(
+                        'bot-log',
+                        log
+                    )
+
+                }
+            )
 
 
         this.bots.set(
@@ -49,77 +314,300 @@ class BotManager {
         )
 
 
+        // =======================================
+        // CONNEXION
+        // =======================================
+
         bot.start()
 
 
         return true
+
     }
 
 
     // =======================================
-    // ARRÊTER UN BOT
+    // ARRETER UN BOT
     // =======================================
 
     stopBot(id) {
 
-        const bot =
-            this.bots.get(id)
+        // =======================================
+        // SI LE BOT EST EN ATTENTE
+        // =======================================
+
+        const pending =
+            this.pendingStarts.get(
+                id
+            )
 
 
-        if (!bot) {
+        if (pending) {
 
-            // Même si le bot n'existe plus
-            // dans le manager, on demande
-            // à l'interface de remettre
-            // le compteur à zéro.
+            pending.cancelled =
+                true
+
+
+            if (
+                pending.timer
+            ) {
+
+                clearTimeout(
+                    pending.timer
+                )
+
+            }
+
+
+            if (
+                pending.countdownTimer
+            ) {
+
+                clearInterval(
+                    pending.countdownTimer
+                )
+
+            }
+
+
+            this.pendingStarts.delete(
+                id
+            )
+
 
             this.send(
                 'bot-update',
                 {
-                    id: id,
-                    status: 'stopped',
-                    startTime: null
+                    id:
+                        id,
+
+                    status:
+                        'stopped',
+
+                    startTime:
+                        null,
+
+                    reconnectSeconds:
+                        null
+                }
+            )
+
+
+            return true
+
+        }
+
+
+        // =======================================
+        // BOT NORMAL
+        // =======================================
+
+        const bot =
+            this.bots.get(
+                id
+            )
+
+
+        if (!bot) {
+
+            this.send(
+                'bot-update',
+                {
+                    id:
+                        id,
+
+                    status:
+                        'stopped',
+
+                    startTime:
+                        null
                 }
             )
 
             return false
+
         }
 
 
-        // Arrêt du bot Minecraft
         bot.stop()
 
 
-        // Suppression du bot actif
-        this.bots.delete(id)
+        this.bots.delete(
+            id
+        )
 
-
-        // IMPORTANT :
-        // On informe l'interface que le bot
-        // est complètement arrêté.
-        //
-        // startTime = null permet de stopper
-        // le compteur dans app.js.
 
         this.send(
             'bot-update',
             {
-                id: id,
-                status: 'stopped',
-                startTime: null
+                id:
+                    id,
+
+                status:
+                    'stopped',
+
+                startTime:
+                    null
             }
         )
 
 
         return true
+
     }
 
 
     // =======================================
-    // ARRÊTER TOUS LES BOTS
+    // LANCER TOUS LES BOTS
+    // =======================================
+
+    async startAll(bots) {
+
+        if (
+            !Array.isArray(bots)
+        ) {
+
+            return false
+
+        }
+
+
+        for (
+            let i = 0;
+            i < bots.length;
+            i++
+        ) {
+
+            const bot =
+                bots[i]
+
+
+            // ===================================
+            // VERIFIER SI DEJA LANCE
+            // ===================================
+
+            if (
+                this.bots.has(bot.id) ||
+                this.pendingStarts.has(bot.id)
+            ) {
+
+                continue
+
+            }
+
+
+            // ===================================
+            // LANCER
+            // ===================================
+
+            await this.startBot(
+                bot
+            )
+
+        }
+
+
+        return true
+
+    }
+
+
+    // =======================================
+    // DELAI ALEATOIRE
+    // =======================================
+
+    getRandomDelay() {
+
+        const min =
+            this.minConnectionDelay
+
+
+        const max =
+            this.maxConnectionDelay
+
+
+        return Math.floor(
+            Math.random() *
+            (
+                max -
+                min +
+                1
+            )
+        ) + min
+
+    }
+
+
+    // =======================================
+    // ARRETER TOUS LES BOTS
     // =======================================
 
     stopAll() {
+
+        // =======================================
+        // ANNULER LES BOTS EN ATTENTE
+        // =======================================
+
+        for (
+            const [
+                id,
+                pending
+            ]
+            of this.pendingStarts
+        ) {
+
+            pending.cancelled =
+                true
+
+
+            if (
+                pending.timer
+            ) {
+
+                clearTimeout(
+                    pending.timer
+                )
+
+            }
+
+
+            if (
+                pending.countdownTimer
+            ) {
+
+                clearInterval(
+                    pending.countdownTimer
+                )
+
+            }
+
+
+            this.send(
+                'bot-update',
+                {
+                    id:
+                        id,
+
+                    status:
+                        'stopped',
+
+                    startTime:
+                        null,
+
+                    reconnectSeconds:
+                        null
+                }
+            )
+
+        }
+
+
+        this.pendingStarts.clear()
+
+
+        // =======================================
+        // ARRETER LES BOTS CONNECTES
+        // =======================================
 
         for (
             const [id, bot]
@@ -129,22 +617,27 @@ class BotManager {
             bot.stop()
 
 
-            // Remise à zéro du temps
-            // pour chaque bot.
-
             this.send(
                 'bot-update',
                 {
-                    id: id,
-                    status: 'stopped',
-                    startTime: null
+                    id:
+                        id,
+
+                    status:
+                        'stopped',
+
+                    startTime:
+                        null
                 }
             )
+
         }
 
 
         this.bots.clear()
+
     }
+
 }
 
 

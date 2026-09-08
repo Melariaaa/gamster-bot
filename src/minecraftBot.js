@@ -6,7 +6,9 @@ class MinecraftBot {
     constructor(data, onUpdate, onLog) {
 
         this.data = data
+
         this.onUpdate = onUpdate
+
         this.onLog = onLog
 
         this.bot = null
@@ -14,18 +16,22 @@ class MinecraftBot {
         this.startTime = null
 
         this.timer = null
+
         this.swingTimer = null
 
-        // Permet de différencier :
-        // - une vraie déconnexion
-        // - un arrêt demandé depuis l'application
+        this.reconnectTimer = null
+
+        this.reconnectCountdownTimer = null
+
         this.manualStop = false
+
+        this.reconnectDelay = 5000
     }
 
 
-    // ==========================================
+    // =======================================
     // LOG
-    // ==========================================
+    // =======================================
 
     log(message) {
 
@@ -33,29 +39,38 @@ class MinecraftBot {
             id: this.data.id,
             message
         })
+
     }
 
 
-    // ==========================================
+    // =======================================
     // UPDATE
-    // ==========================================
+    // =======================================
 
-    update(status) {
+    update(status, reconnectSeconds = null) {
 
         this.onUpdate({
 
-            id: this.data.id,
+            id:
+                this.data.id,
 
-            status: status,
+            status:
+                status,
 
-            startTime: this.startTime
+            startTime:
+                this.startTime,
+
+            reconnectSeconds:
+                reconnectSeconds
+
         })
+
     }
 
 
-    // ==========================================
-    // START
-    // ==========================================
+    // =======================================
+    // DEMARRAGE
+    // =======================================
 
     start() {
 
@@ -64,11 +79,29 @@ class MinecraftBot {
         }
 
 
-        // Nouveau démarrage :
-        // on considère que l'arrêt précédent
-        // n'est plus actif.
-
         this.manualStop = false
+
+
+        if (this.reconnectTimer) {
+
+            clearTimeout(
+                this.reconnectTimer
+            )
+
+            this.reconnectTimer = null
+
+        }
+
+
+        if (this.reconnectCountdownTimer) {
+
+            clearInterval(
+                this.reconnectCountdownTimer
+            )
+
+            this.reconnectCountdownTimer = null
+
+        }
 
 
         this.log(
@@ -88,12 +121,13 @@ class MinecraftBot {
 
             version:
                 '1.8.9'
+
         }
 
 
-        // ==========================================
-        // SANS PROXY
-        // ==========================================
+        // =======================================
+        // CONNEXION SANS PROXY
+        // =======================================
 
         if (
             !this.data.proxy ||
@@ -105,12 +139,13 @@ class MinecraftBot {
 
             options.port =
                 25565
+
         }
 
 
-        // ==========================================
-        // AVEC PROXY SOCKS5
-        // ==========================================
+        // =======================================
+        // CONNEXION AVEC PROXY
+        // =======================================
 
         else {
 
@@ -141,6 +176,7 @@ class MinecraftBot {
 
                             password:
                                 proxy.password
+
                         },
 
                         command:
@@ -153,6 +189,7 @@ class MinecraftBot {
 
                             port:
                                 25565
+
                         }
 
                     }, (err, info) => {
@@ -169,6 +206,7 @@ class MinecraftBot {
                             )
 
                             return
+
                         }
 
 
@@ -180,14 +218,17 @@ class MinecraftBot {
                         client.emit(
                             'connect'
                         )
+
                     })
+
                 }
+
         }
 
 
-        // ==========================================
+        // =======================================
         // CREATION DU BOT
-        // ==========================================
+        // =======================================
 
         this.bot =
             mineflayer.createBot(
@@ -195,17 +236,13 @@ class MinecraftBot {
             )
 
 
-        // ==========================================
-        // CONNEXION
-        // ==========================================
+        // =======================================
+        // BOT CONNECTE
+        // =======================================
 
         this.bot.once(
             'spawn',
             () => {
-
-                // Si le bot a été arrêté
-                // avant d'arriver au spawn,
-                // on ne démarre pas le compteur.
 
                 if (this.manualStop) {
                     return
@@ -226,9 +263,9 @@ class MinecraftBot {
                 )
 
 
-                // ======================================
-                // CONNEXION SERVEUR
-                // ======================================
+                // =======================================
+                // CONNEXION AUTOMATIQUE AU SERVEUR
+                // =======================================
 
                 setTimeout(() => {
 
@@ -236,7 +273,9 @@ class MinecraftBot {
                         !this.bot ||
                         this.manualStop
                     ) {
+
                         return
+
                     }
 
 
@@ -253,9 +292,9 @@ class MinecraftBot {
                 }, 3000)
 
 
-                // ======================================
+                // =======================================
                 // COMPTEUR
-                // ======================================
+                // =======================================
 
                 this.timer =
                     setInterval(() => {
@@ -264,7 +303,9 @@ class MinecraftBot {
                             !this.bot ||
                             this.manualStop
                         ) {
+
                             return
+
                         }
 
 
@@ -273,13 +314,14 @@ class MinecraftBot {
                         )
 
                     }, 1000)
+
             }
         )
 
 
-        // ==========================================
+        // =======================================
         // DECONNEXION
-        // ==========================================
+        // =======================================
 
         this.bot.on(
             'end',
@@ -288,19 +330,17 @@ class MinecraftBot {
                 this.clearTimers()
 
 
-                // Sauvegarde de la raison
-                // avant de nettoyer le bot.
-
                 const wasManualStop =
                     this.manualStop
 
 
-                this.bot = null
+                this.bot =
+                    null
 
 
-                // ======================================
-                // ARRET DEMANDE PAR L'APPLICATION
-                // ======================================
+                // =======================================
+                // ARRET MANUEL
+                // =======================================
 
                 if (wasManualStop) {
 
@@ -317,13 +357,15 @@ class MinecraftBot {
                         '⚪ Bot arrêté.'
                     )
 
+
                     return
+
                 }
 
 
-                // ======================================
-                // DECONNEXION NORMALE
-                // ======================================
+                // =======================================
+                // DECONNEXION INVOLONTAIRE
+                // =======================================
 
                 this.startTime =
                     null
@@ -337,13 +379,21 @@ class MinecraftBot {
                 this.log(
                     '🔴 Bot déconnecté.'
                 )
+
+
+                // =======================================
+                // RECONNEXION AUTOMATIQUE
+                // =======================================
+
+                this.scheduleReconnect()
+
             }
         )
 
 
-        // ==========================================
+        // =======================================
         // ERREUR
-        // ==========================================
+        // =======================================
 
         this.bot.on(
             'error',
@@ -358,13 +408,14 @@ class MinecraftBot {
                 this.update(
                     'error'
                 )
+
             }
         )
 
 
-        // ==========================================
-        // AFK
-        // ==========================================
+        // =======================================
+        // MOUVEMENT DU BRAS
+        // =======================================
 
         this.swingTimer =
             setInterval(() => {
@@ -378,36 +429,183 @@ class MinecraftBot {
                     this.bot.swingArm(
                         'right'
                     )
+
                 }
 
             }, 30000)
+
     }
 
 
-    // ==========================================
-    // STOP
-    // ==========================================
+    // =======================================
+    // PROGRAMMER RECONNEXION
+    // =======================================
+
+    scheduleReconnect() {
+
+        if (this.manualStop) {
+            return
+        }
+
+
+        if (this.reconnectTimer) {
+            return
+        }
+
+
+        let seconds =
+            Math.ceil(
+                this.reconnectDelay / 1000
+            )
+
+
+        // =======================================
+        // PREMIER AFFICHAGE
+        // =======================================
+
+        this.update(
+            'reconnecting',
+            seconds
+        )
+
+
+        this.log(
+            '🔄 Reconnexion dans ' +
+            seconds +
+            ' secondes...'
+        )
+
+
+        // =======================================
+        // COMPTE A REBOURS
+        // =======================================
+
+        this.reconnectCountdownTimer =
+            setInterval(() => {
+
+                if (this.manualStop) {
+
+                    clearInterval(
+                        this.reconnectCountdownTimer
+                    )
+
+                    this.reconnectCountdownTimer =
+                        null
+
+                    return
+
+                }
+
+
+                seconds--
+
+
+                if (seconds <= 0) {
+
+                    clearInterval(
+                        this.reconnectCountdownTimer
+                    )
+
+                    this.reconnectCountdownTimer =
+                        null
+
+                    return
+
+                }
+
+
+                this.update(
+                    'reconnecting',
+                    seconds
+                )
+
+            }, 1000)
+
+
+        // =======================================
+        // RECONNEXION
+        // =======================================
+
+        this.reconnectTimer =
+            setTimeout(() => {
+
+                this.reconnectTimer =
+                    null
+
+
+                if (this.reconnectCountdownTimer) {
+
+                    clearInterval(
+                        this.reconnectCountdownTimer
+                    )
+
+                    this.reconnectCountdownTimer =
+                        null
+
+                }
+
+
+                if (this.manualStop) {
+                    return
+                }
+
+
+                this.log(
+                    '🔄 Tentative de reconnexion...'
+                )
+
+
+                this.start()
+
+            }, this.reconnectDelay)
+
+    }
+
+
+    // =======================================
+    // ARRET
+    // =======================================
 
     stop() {
 
-        // On indique AVANT quit()
-        // qu'il s'agit d'un arrêt volontaire.
+        this.manualStop =
+            true
 
-        this.manualStop = true
+
+        // =======================================
+        // ANNULER RECONNEXION
+        // =======================================
+
+        if (this.reconnectTimer) {
+
+            clearTimeout(
+                this.reconnectTimer
+            )
+
+            this.reconnectTimer =
+                null
+
+        }
+
+
+        if (this.reconnectCountdownTimer) {
+
+            clearInterval(
+                this.reconnectCountdownTimer
+            )
+
+            this.reconnectCountdownTimer =
+                null
+
+        }
 
 
         this.clearTimers()
 
 
-        // Le compteur doit être arrêté
-        // immédiatement.
-
         this.startTime =
             null
 
-
-        // On informe immédiatement
-        // l'interface.
 
         this.update(
             'stopped'
@@ -415,7 +613,6 @@ class MinecraftBot {
 
 
         if (!this.bot) {
-
             return
         }
 
@@ -423,11 +620,6 @@ class MinecraftBot {
         const bot =
             this.bot
 
-
-        // On ne met PAS this.bot = null ici.
-        //
-        // On laisse l'événement "end"
-        // faire le nettoyage correctement.
 
         try {
 
@@ -443,14 +635,17 @@ class MinecraftBot {
             )
 
 
-            this.bot = null
+            this.bot =
+                null
+
         }
+
     }
 
 
-    // ==========================================
+    // =======================================
     // NETTOYAGE DES TIMERS
-    // ==========================================
+    // =======================================
 
     clearTimers() {
 
@@ -462,6 +657,7 @@ class MinecraftBot {
 
             this.timer =
                 null
+
         }
 
 
@@ -473,8 +669,11 @@ class MinecraftBot {
 
             this.swingTimer =
                 null
+
         }
+
     }
+
 }
 
 

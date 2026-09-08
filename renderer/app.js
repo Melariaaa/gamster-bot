@@ -6,6 +6,394 @@ let selectedBotId = null
 
 let botToDeleteId = null
 
+let logs = []
+
+let currentPage = 'bots'
+
+
+// =======================================
+// NOTIFICATION CONNEXION
+// =======================================
+
+let connectionNotification = null
+
+let connectionNotificationHideTimer = null
+
+let connectionNotificationRemoveTimer = null
+
+
+// =======================================
+// VERIFIER SI UN BOT ATTEND
+// =======================================
+
+function hasWaitingBot() {
+
+    return bots.some(
+        bot => {
+
+            const state =
+                states[bot.id]
+
+            return (
+                state &&
+                state.status === 'waiting'
+            )
+
+        }
+    )
+
+}
+
+
+// =======================================
+// AFFICHER NOTIFICATION
+// =======================================
+
+function showConnectionNotification(data) {
+
+    if (!data) {
+
+        return
+
+    }
+
+
+    if (
+        data.status !== 'waiting'
+    ) {
+
+        return
+
+    }
+
+
+    // ===================================
+    // ANNULER LA DISPARITION PREVUE
+    // ===================================
+
+    if (
+        connectionNotificationHideTimer
+    ) {
+
+        clearTimeout(
+            connectionNotificationHideTimer
+        )
+
+        connectionNotificationHideTimer =
+            null
+
+    }
+
+
+    // ===================================
+    // ANNULER LA SUPPRESSION PREVUE
+    // ===================================
+
+    if (
+        connectionNotificationRemoveTimer
+    ) {
+
+        clearTimeout(
+            connectionNotificationRemoveTimer
+        )
+
+        connectionNotificationRemoveTimer =
+            null
+
+    }
+
+
+    // ===================================
+    // CREATION DE LA NOTIFICATION
+    // ===================================
+
+    if (!connectionNotification) {
+
+        connectionNotification =
+            document.createElement(
+                'div'
+            )
+
+
+        connectionNotification.style.position =
+            'fixed'
+
+        connectionNotification.style.top =
+            '82px'
+
+        connectionNotification.style.left =
+            '50%'
+
+        connectionNotification.style.transform =
+            'translateX(-50%)'
+
+        connectionNotification.style.zIndex =
+            '9999'
+
+        connectionNotification.style.minWidth =
+            '300px'
+
+        connectionNotification.style.maxWidth =
+            '420px'
+
+        connectionNotification.style.padding =
+            '14px 18px'
+
+        connectionNotification.style.border =
+            '1px solid rgba(139, 92, 246, 0.45)'
+
+        connectionNotification.style.borderRadius =
+            '14px'
+
+        connectionNotification.style.background =
+            'linear-gradient(135deg, rgba(25, 22, 40, 0.97), rgba(15, 15, 24, 0.97))'
+
+        connectionNotification.style.boxShadow =
+            '0 12px 35px rgba(0, 0, 0, 0.35), 0 0 25px rgba(139, 92, 246, 0.12)'
+
+        connectionNotification.style.backdropFilter =
+            'blur(12px)'
+
+        connectionNotification.style.color =
+            '#ffffff'
+
+        connectionNotification.style.fontFamily =
+            'inherit'
+
+        connectionNotification.style.textAlign =
+            'center'
+
+        connectionNotification.style.transition =
+            'opacity 0.25s ease, transform 0.25s ease'
+
+
+        document.body.appendChild(
+            connectionNotification
+        )
+
+    }
+
+
+    // ===================================
+    // TEMPS RESTANT
+    // ===================================
+
+    const seconds =
+        Number(
+            data.reconnectSeconds
+        )
+
+
+    const username =
+        escapeHtml(
+            data.username ||
+            'Bot'
+        )
+
+
+    // ===================================
+    // CONTENU
+    // ===================================
+
+    connectionNotification.innerHTML = `
+
+        <div style="
+            font-size: 22px;
+            margin-bottom: 6px;
+        ">
+            ⏱️
+        </div>
+
+        <div style="
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        ">
+            Connexion de ${username}
+        </div>
+
+        <div style="
+            font-size: 13px;
+            color: #aeb4c3;
+        ">
+            Connexion dans
+            <strong style="
+                color: #a98aff;
+                font-size: 18px;
+            ">
+                ${seconds}s
+            </strong>
+        </div>
+
+    `
+
+
+    // ===================================
+    // AFFICHER UNIQUEMENT DANS BOTS
+    // ===================================
+
+    if (
+        currentPage === 'bots'
+    ) {
+
+        connectionNotification.style.display =
+            'block'
+
+        connectionNotification.style.opacity =
+            '1'
+
+        connectionNotification.style.transform =
+            'translateX(-50%)'
+
+    } else {
+
+        connectionNotification.style.display =
+            'none'
+
+    }
+
+}
+
+
+// =======================================
+// MASQUER LA NOTIFICATION
+// =======================================
+
+function hideConnectionNotification() {
+
+    if (
+        !connectionNotification
+    ) {
+
+        return
+
+    }
+
+
+    // ===================================
+    // ANNULER ANCIEN TIMER
+    // ===================================
+
+    if (
+        connectionNotificationHideTimer
+    ) {
+
+        clearTimeout(
+            connectionNotificationHideTimer
+        )
+
+        connectionNotificationHideTimer =
+            null
+
+    }
+
+
+    // ===================================
+    // ATTENDRE AVANT DE MASQUER
+    // ===================================
+
+    connectionNotificationHideTimer =
+        setTimeout(
+            () => {
+
+                connectionNotificationHideTimer =
+                    null
+
+
+                if (
+                    !connectionNotification
+                ) {
+
+                    return
+
+                }
+
+
+                // ===================================
+                // SI UN AUTRE BOT ATTEND
+                // ===================================
+
+                if (
+                    hasWaitingBot()
+                ) {
+
+                    return
+
+                }
+
+
+                // ===================================
+                // SI ON EST DANS UNE AUTRE PAGE
+                // ===================================
+
+                if (
+                    currentPage !== 'bots'
+                ) {
+
+                    connectionNotification.style.display =
+                        'none'
+
+                    return
+
+                }
+
+
+                // ===================================
+                // MASQUER
+                // ===================================
+
+                connectionNotification.style.opacity =
+                    '0'
+
+                connectionNotification.style.transform =
+                    'translateX(-50%) translateY(-8px)'
+
+
+                // ===================================
+                // SUPPRESSION DU DOM
+                // ===================================
+
+                if (
+                    connectionNotificationRemoveTimer
+                ) {
+
+                    clearTimeout(
+                        connectionNotificationRemoveTimer
+                    )
+
+                }
+
+
+                connectionNotificationRemoveTimer =
+                    setTimeout(
+                        () => {
+
+                            if (
+                                connectionNotification &&
+                                !hasWaitingBot()
+                            ) {
+
+                                connectionNotification.remove()
+
+                                connectionNotification =
+                                    null
+
+                            }
+
+
+                            connectionNotificationRemoveTimer =
+                                null
+
+                        },
+                        250
+                    )
+
+            },
+            1500
+        )
+
+}
+
 
 // =======================================
 // ELEMENTS
@@ -48,6 +436,150 @@ const proxyPassword =
 
 
 // =======================================
+// ELEMENTS PROFIL
+// =======================================
+
+const profileButton =
+    document.getElementById('profileButton')
+
+const profileAvatar =
+    document.getElementById('profileAvatar')
+
+const profileUsername =
+    document.getElementById('profileUsername')
+
+
+// =======================================
+// ELEMENTS NAVIGATION
+// =======================================
+
+const botsTab =
+    document.getElementById('botsTab')
+
+const offlineAccountsTab =
+    document.getElementById(
+        'offlineAccountsTab'
+    )
+
+const logsTab =
+    document.getElementById('logsTab')
+
+const logsPage =
+    document.getElementById('logsPage')
+
+const botsPage =
+    document.getElementById('botsPage')
+
+const offlineAccountsPage =
+    document.getElementById(
+        'offlineAccountsPage'
+    )
+
+const logsContainer =
+    document.getElementById('logsContainer')
+
+
+// =======================================
+// ELEMENTS COMPTES HORS LIGNE
+// =======================================
+
+const offlineUsername =
+    document.getElementById(
+        'offlineUsername'
+    )
+
+const offlinePassword =
+    document.getElementById(
+        'offlinePassword'
+    )
+
+const offlinePasswordConfirm =
+    document.getElementById(
+        'offlinePasswordConfirm'
+    )
+
+
+// =======================================
+// PROXY COMPTES HORS LIGNE
+// =======================================
+
+const offlineProxyEnabled =
+    document.getElementById(
+        'offlineProxyEnabled'
+    )
+
+const offlineProxyHost =
+    document.getElementById(
+        'offlineProxyHost'
+    )
+
+const offlineProxyPort =
+    document.getElementById(
+        'offlineProxyPort'
+    )
+
+const offlineProxyUsername =
+    document.getElementById(
+        'offlineProxyUsername'
+    )
+
+const offlineProxyPassword =
+    document.getElementById(
+        'offlineProxyPassword'
+    )
+
+
+// =======================================
+// AFFICHAGE PROXY COMPTES HORS LIGNE
+// =======================================
+
+const offlineProxyFields =
+    document.getElementById(
+        'offlineProxyFields'
+    )
+
+
+if (
+    offlineProxyEnabled &&
+    offlineProxyFields
+) {
+
+    offlineProxyEnabled.addEventListener(
+        'change',
+        () => {
+
+            if (
+                offlineProxyEnabled.checked
+            ) {
+
+                offlineProxyFields.style.display =
+                    'block'
+
+            } else {
+
+                offlineProxyFields.style.display =
+                    'none'
+
+            }
+
+        }
+    )
+
+}
+
+
+const executeOfflineAccount =
+    document.getElementById(
+        'executeOfflineAccount'
+    )
+
+const offlineAccountResult =
+    document.getElementById(
+        'offlineAccountResult'
+    )
+
+
+// =======================================
 // ELEMENTS POPUP SUPPRESSION
 // =======================================
 
@@ -62,6 +594,711 @@ const cancelDelete =
 
 const confirmDelete =
     document.getElementById('confirmDelete')
+
+
+// =======================================
+// NAVIGATION BOTS
+// =======================================
+
+function showBotsPage() {
+
+    currentPage = 'bots'
+
+
+    if (botsPage) {
+
+        botsPage.classList.add(
+            'active'
+        )
+
+    }
+
+
+    if (offlineAccountsPage) {
+
+        offlineAccountsPage.classList.remove(
+            'active'
+        )
+
+    }
+
+
+    if (logsPage) {
+
+        logsPage.classList.remove(
+            'active'
+        )
+
+    }
+
+
+    if (botsTab) {
+
+        botsTab.classList.add(
+            'active'
+        )
+
+    }
+
+
+    if (offlineAccountsTab) {
+
+        offlineAccountsTab.classList.remove(
+            'active'
+        )
+
+    }
+
+
+    if (logsTab) {
+
+        logsTab.classList.remove(
+            'active'
+        )
+
+    }
+
+
+    // ===================================
+    // REAFFICHER LA NOTIFICATION
+    // SI UN BOT ATTEND
+    // ===================================
+
+    if (
+        connectionNotification &&
+        hasWaitingBot()
+    ) {
+
+        connectionNotification.style.display =
+            'block'
+
+        connectionNotification.style.opacity =
+            '1'
+
+        connectionNotification.style.transform =
+            'translateX(-50%)'
+
+    }
+
+}
+
+
+// =======================================
+// NAVIGATION COMPTES HORS LIGNE
+// =======================================
+
+function showOfflineAccountsPage() {
+
+    currentPage =
+        'offlineAccounts'
+
+
+    if (botsPage) {
+
+        botsPage.classList.remove(
+            'active'
+        )
+
+    }
+
+
+    if (offlineAccountsPage) {
+
+        offlineAccountsPage.classList.add(
+            'active'
+        )
+
+    }
+
+
+    if (logsPage) {
+
+        logsPage.classList.remove(
+            'active'
+        )
+
+    }
+
+
+    if (botsTab) {
+
+        botsTab.classList.remove(
+            'active'
+        )
+
+    }
+
+
+    if (offlineAccountsTab) {
+
+        offlineAccountsTab.classList.add(
+            'active'
+        )
+
+    }
+
+
+    if (logsTab) {
+
+        logsTab.classList.remove(
+            'active'
+        )
+
+    }
+
+
+    // ===================================
+    // MASQUER LA NOTIFICATION
+    // ===================================
+
+    if (
+        connectionNotification
+    ) {
+
+        connectionNotification.style.display =
+            'none'
+
+    }
+
+}
+
+
+// =======================================
+// NAVIGATION LOGS
+// =======================================
+
+function showLogsPage() {
+
+    currentPage = 'logs'
+
+
+    if (botsPage) {
+
+        botsPage.classList.remove(
+            'active'
+        )
+
+    }
+
+
+    if (offlineAccountsPage) {
+
+        offlineAccountsPage.classList.remove(
+            'active'
+        )
+
+    }
+
+
+    if (logsPage) {
+
+        logsPage.classList.add(
+            'active'
+        )
+
+    }
+
+
+    if (botsTab) {
+
+        botsTab.classList.remove(
+            'active'
+        )
+
+    }
+
+
+    if (offlineAccountsTab) {
+
+        offlineAccountsTab.classList.remove(
+            'active'
+        )
+
+    }
+
+
+    if (logsTab) {
+
+        logsTab.classList.add(
+            'active'
+        )
+
+    }
+
+
+    // ===================================
+    // MASQUER LA NOTIFICATION DANS LOGS
+    // ===================================
+
+    if (
+        connectionNotification
+    ) {
+
+        connectionNotification.style.display =
+            'none'
+
+    }
+
+
+    renderLogs()
+
+}
+
+
+// =======================================
+// BOUTON BOTS
+// =======================================
+
+if (botsTab) {
+
+    botsTab.onclick = () => {
+
+        showBotsPage()
+
+    }
+
+}
+
+
+// =======================================
+// BOUTON COMPTES HORS LIGNE
+// =======================================
+
+if (offlineAccountsTab) {
+
+    offlineAccountsTab.onclick = () => {
+
+        showOfflineAccountsPage()
+
+    }
+
+}
+
+
+// =======================================
+// BOUTON LOGS
+// =======================================
+
+if (logsTab) {
+
+    logsTab.onclick = () => {
+
+        showLogsPage()
+
+    }
+
+}
+
+
+// =======================================
+// CREATION COMPTE HORS LIGNE
+// =======================================
+
+if (executeOfflineAccount) {
+
+    executeOfflineAccount.onclick = async () => {
+
+        const username =
+            offlineUsername.value.trim()
+
+        const password =
+            offlinePassword.value
+
+        const passwordConfirm =
+            offlinePasswordConfirm.value
+
+
+        // ===================================
+        // PROXY HORS LIGNE
+        // ===================================
+
+        const proxy = {
+
+            enabled:
+                offlineProxyEnabled
+                    ? offlineProxyEnabled.checked
+                    : false,
+
+            host:
+                offlineProxyHost
+                    ? offlineProxyHost.value.trim()
+                    : '',
+
+            port:
+                offlineProxyPort
+                    ? Number(
+                        offlineProxyPort.value
+                    ) || 1080
+                    : 1080,
+
+            username:
+                offlineProxyUsername
+                    ? offlineProxyUsername.value.trim()
+                    : '',
+
+            password:
+                offlineProxyPassword
+                    ? offlineProxyPassword.value
+                    : ''
+
+        }
+
+
+        // ===================================
+        // VERIFICATION PSEUDO
+        // ===================================
+
+        if (!username) {
+
+            alert(
+                'Entre le pseudo Minecraft.'
+            )
+
+            offlineUsername.focus()
+
+            return
+
+        }
+
+
+        // ===================================
+        // VERIFICATION MOT DE PASSE
+        // ===================================
+
+        if (!password) {
+
+            alert(
+                'Entre le mot de passe serveur.'
+            )
+
+            offlinePassword.focus()
+
+            return
+
+        }
+
+
+        // ===================================
+        // CONFIRMATION MOT DE PASSE
+        // ===================================
+
+        if (
+            password !== passwordConfirm
+        ) {
+
+            alert(
+                'Les deux mots de passe ne correspondent pas.'
+            )
+
+            offlinePasswordConfirm.focus()
+
+            return
+
+        }
+
+
+        // ===================================
+        // VERIFICATION PROXY
+        // ===================================
+
+        if (
+            proxy.enabled
+        ) {
+
+            if (!proxy.host) {
+
+                alert(
+                    'Entre l’adresse du proxy SOCKS5.'
+                )
+
+                if (
+                    offlineProxyHost
+                ) {
+
+                    offlineProxyHost.focus()
+
+                }
+
+                return
+
+            }
+
+
+            if (
+                !Number.isInteger(proxy.port) ||
+                proxy.port < 1 ||
+                proxy.port > 65535
+            ) {
+
+                alert(
+                    'Le port du proxy est invalide.'
+                )
+
+                if (
+                    offlineProxyPort
+                ) {
+
+                    offlineProxyPort.focus()
+
+                }
+
+                return
+
+            }
+
+        }
+
+
+        // ===================================
+        // DESACTIVER LE BOUTON
+        // ===================================
+
+        executeOfflineAccount.disabled =
+            true
+
+        executeOfflineAccount.textContent =
+            '⏳ Création en cours...'
+
+
+        // ===================================
+        // MESSAGE RESULTAT
+        // ===================================
+
+        if (offlineAccountResult) {
+
+            offlineAccountResult.classList.add(
+                'hidden'
+            )
+
+            offlineAccountResult.textContent =
+                ''
+
+        }
+
+
+        try {
+
+            const result =
+                await window.electronAPI.createOfflineAccount(
+                    username,
+                    password,
+                    proxy
+                )
+
+
+            // ===================================
+            // SUCCES
+            // ===================================
+
+            if (
+                result &&
+                result.success
+            ) {
+
+                if (offlineAccountResult) {
+
+                    offlineAccountResult.textContent =
+                        '✅ Compte créé avec succès. Tu peux maintenant ajouter ce compte dans l’onglet Bots.'
+
+                    offlineAccountResult.classList.remove(
+                        'hidden'
+                    )
+
+                }
+
+
+                // ===================================
+                // VIDER LES CHAMPS
+                // ===================================
+
+                offlineUsername.value =
+                    ''
+
+                offlinePassword.value =
+                    ''
+
+                offlinePasswordConfirm.value =
+                    ''
+
+
+                // ===================================
+                // VIDER LE PROXY
+                // ===================================
+
+                if (
+                    offlineProxyEnabled
+                ) {
+
+                    offlineProxyEnabled.checked =
+                        false
+
+                }
+
+
+                if (
+                    offlineProxyFields
+                ) {
+
+                    offlineProxyFields.style.display =
+                        'none'
+
+                }
+
+
+                if (
+                    offlineProxyHost
+                ) {
+
+                    offlineProxyHost.value =
+                        ''
+
+                }
+
+
+                if (
+                    offlineProxyPort
+                ) {
+
+                    offlineProxyPort.value =
+                        1080
+
+                }
+
+
+                if (
+                    offlineProxyUsername
+                ) {
+
+                    offlineProxyUsername.value =
+                        ''
+
+                }
+
+
+                if (
+                    offlineProxyPassword
+                ) {
+
+                    offlineProxyPassword.value =
+                        ''
+
+                }
+
+            } else {
+
+                throw new Error(
+                    result &&
+                    result.error
+                        ? result.error
+                        : 'Impossible de créer le compte.'
+                )
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                'Erreur création compte hors ligne :',
+                error
+            )
+
+
+            if (offlineAccountResult) {
+
+                offlineAccountResult.textContent =
+                    '❌ ' +
+                    (
+                        error.message ||
+                        'Impossible de créer le compte.'
+                    )
+
+                offlineAccountResult.classList.remove(
+                    'hidden'
+                )
+
+            }
+
+        }
+
+
+        // ===================================
+        // REACTIVER LE BOUTON
+        // ===================================
+
+        executeOfflineAccount.disabled =
+            false
+
+        executeOfflineAccount.textContent =
+            '▶ Exécuter'
+
+    }
+
+}
+
+
+// =======================================
+// CHARGEMENT DU PROFIL
+// =======================================
+
+async function loadProfile() {
+
+    try {
+
+        const result =
+            await window.electronAPI.profileStatus()
+
+
+        if (
+            result &&
+            result.success &&
+            result.profile
+        ) {
+
+            const profile =
+                result.profile
+
+
+            // ---------------------------------
+            // PSEUDO
+            // ---------------------------------
+
+            if (
+                profileUsername &&
+                profile.username
+            ) {
+
+                profileUsername.textContent =
+                    profile.username
+
+            }
+
+
+            // ---------------------------------
+            // AVATAR
+            // ---------------------------------
+
+            if (
+                profileAvatar &&
+                profile.avatarUrl
+            ) {
+
+                profileAvatar.src =
+                    profile.avatarUrl
+
+            }
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            'Erreur lors du chargement du profil :',
+            error
+        )
+
+    }
+
+}
 
 
 // =======================================
@@ -99,7 +1336,107 @@ async function loadBots() {
         bots = []
 
         render()
+
     }
+
+}
+
+
+// =======================================
+// BOUTON LANCER / ARRETER TOUT
+// =======================================
+
+function updateToggleAllButton() {
+
+    const button =
+        document.getElementById(
+            'toggleAllBots'
+        )
+
+
+    const icon =
+        document.getElementById(
+            'toggleAllIcon'
+        )
+
+
+    const text =
+        document.getElementById(
+            'toggleAllText'
+        )
+
+
+    if (
+        !button ||
+        !icon ||
+        !text
+    ) {
+
+        return
+
+    }
+
+
+    const hasRunningBot =
+        bots.some(bot => {
+
+            const state =
+                states[bot.id]
+
+
+            return (
+                state &&
+                (
+                    state.status === 'connected' ||
+                    state.status === 'connecting' ||
+                    state.status === 'waiting' ||
+                    state.status === 'reconnecting'
+                )
+            )
+
+        })
+
+
+    if (hasRunningBot) {
+
+        icon.textContent =
+            '■'
+
+
+        text.textContent =
+            'Arrêter tout'
+
+
+        button.classList.add(
+            'danger'
+        )
+
+
+        button.classList.remove(
+            'success'
+        )
+
+    } else {
+
+        icon.textContent =
+            '▶'
+
+
+        text.textContent =
+            'Lancer tout'
+
+
+        button.classList.add(
+            'success'
+        )
+
+
+        button.classList.remove(
+            'danger'
+        )
+
+    }
+
 }
 
 
@@ -108,6 +1445,16 @@ async function loadBots() {
 // =======================================
 
 function render() {
+
+    if (
+        !botCount ||
+        !botList
+    ) {
+
+        return
+
+    }
+
 
     botCount.textContent =
         bots.length +
@@ -118,7 +1465,9 @@ function render() {
         )
 
 
-    if (bots.length === 0) {
+    if (
+        bots.length === 0
+    ) {
 
         botList.innerHTML = `
 
@@ -141,7 +1490,12 @@ function render() {
 
         `
 
+
+        updateToggleAllButton()
+
+
         return
+
     }
 
 
@@ -157,16 +1511,30 @@ function render() {
                     'stopped',
 
                 startTime:
+                    null,
+
+                reconnectSeconds:
                     null
+
             }
 
 
         const card =
-            document.createElement('div')
+            document.createElement(
+                'div'
+            )
 
 
         card.className =
             'bot-card'
+
+
+        // ===================================
+        // IDENTIFIANT DE LA CARTE
+        // ===================================
+
+        card.dataset.botId =
+            bot.id
 
 
         card.innerHTML = `
@@ -185,7 +1553,8 @@ function render() {
             <div class="status">
 
                 ${getStatus(
-                    state.status
+                    state.status,
+                    state
                 )}
 
             </div>
@@ -207,7 +1576,6 @@ function render() {
 
 
             <div class="bot-buttons">
-
 
                 <button
                     class="btn success"
@@ -244,14 +1612,20 @@ function render() {
                     🗑
                 </button>
 
-
             </div>
 
         `
 
 
-        botList.appendChild(card)
+        botList.appendChild(
+            card
+        )
+
     })
+
+
+    updateToggleAllButton()
+
 }
 
 
@@ -259,25 +1633,75 @@ function render() {
 // STATUT
 // =======================================
 
-function getStatus(status) {
+function getStatus(
+    status,
+    state = {}
+) {
 
     switch (status) {
 
         case 'connected':
+
             return '🟢 Connecté'
 
+
+        case 'waiting':
+
+            if (
+                state.reconnectSeconds !== null &&
+                state.reconnectSeconds !== undefined
+            ) {
+
+                return (
+                    '⏳ Connexion dans ' +
+                    state.reconnectSeconds +
+                    's'
+                )
+
+            }
+
+            return '⏳ Préparation...'
+
+
         case 'connecting':
+
             return '🟡 Connexion...'
 
+
+        case 'reconnecting':
+
+            if (
+                state.reconnectSeconds !== null &&
+                state.reconnectSeconds !== undefined
+            ) {
+
+                return (
+                    '🔄 Reconnexion dans ' +
+                    state.reconnectSeconds +
+                    's'
+                )
+
+            }
+
+            return '🔄 Reconnexion...'
+
+
         case 'disconnected':
+
             return '🔴 Déconnecté'
 
+
         case 'error':
+
             return '⚠️ Erreur'
 
+
         default:
+
             return '⚪ Arrêté'
+
     }
+
 }
 
 
@@ -287,7 +1711,9 @@ function getStatus(status) {
 
 function getTime(state) {
 
-    if (!state.startTime) {
+    if (
+        !state.startTime
+    ) {
 
         return '00:00:00'
 
@@ -303,7 +1729,10 @@ function getTime(state) {
         )
 
 
-    return formatTime(seconds)
+    return formatTime(
+        seconds
+    )
+
 }
 
 
@@ -321,7 +1750,9 @@ function formatTime(seconds) {
 
     const minutes =
         Math.floor(
-            (seconds % 3600) / 60
+            (
+                seconds % 3600
+            ) / 60
         )
 
 
@@ -345,6 +1776,7 @@ function formatTime(seconds) {
             .padStart(2, '0')
 
     )
+
 }
 
 
@@ -352,40 +1784,45 @@ function formatTime(seconds) {
 // COMPTEUR TEMPS
 // =======================================
 
-setInterval(() => {
+setInterval(
+    () => {
 
-    bots.forEach(bot => {
+        bots.forEach(
+            bot => {
 
-        const state =
-            states[bot.id]
-
-
-        if (
-            !state ||
-            !state.startTime
-        ) {
-
-            return
-
-        }
+                const state =
+                    states[bot.id]
 
 
-        const element =
-            document.getElementById(
-                `time-${bot.id}`
-            )
+                if (
+                    !state ||
+                    !state.startTime
+                ) {
+
+                    return
+
+                }
 
 
-        if (element) {
+                const element =
+                    document.getElementById(
+                        `time-${bot.id}`
+                    )
 
-            element.textContent =
-                getTime(state)
 
-        }
+                if (element) {
 
-    })
+                    element.textContent =
+                        getTime(state)
 
-}, 1000)
+                }
+
+            }
+        )
+
+    },
+    1000
+)
 
 
 // =======================================
@@ -396,15 +1833,20 @@ document.getElementById(
     'addBot'
 ).onclick = () => {
 
-    usernameInput.value = ''
+    usernameInput.value =
+        ''
 
-    passwordInput.value = ''
+    passwordInput.value =
+        ''
+
 
     modal.classList.remove(
         'hidden'
     )
 
+
     usernameInput.focus()
+
 }
 
 
@@ -417,6 +1859,7 @@ function closeModal() {
     modal.classList.add(
         'hidden'
     )
+
 }
 
 
@@ -455,6 +1898,7 @@ document.getElementById(
         )
 
         return
+
     }
 
 
@@ -465,6 +1909,7 @@ document.getElementById(
         )
 
         return
+
     }
 
 
@@ -495,7 +1940,9 @@ document.getElementById(
 
             password:
                 ''
+
         }
+
     }
 
 
@@ -507,11 +1954,11 @@ document.getElementById(
             )
 
 
-        // Le main.js renvoie un seul bot.
-        // On l'ajoute donc au tableau.
         if (newBot) {
 
-            bots.push(newBot)
+            bots.push(
+                newBot
+            )
 
         }
 
@@ -530,7 +1977,9 @@ document.getElementById(
         alert(
             'Impossible d’ajouter le bot.'
         )
+
     }
+
 }
 
 
@@ -558,6 +2007,7 @@ function openSettings(id) {
         )
 
         return
+
     }
 
 
@@ -578,6 +2028,7 @@ function openSettings(id) {
 
             password:
                 ''
+
         }
 
 
@@ -610,6 +2061,7 @@ function openSettings(id) {
     settingsModal.classList.remove(
         'hidden'
     )
+
 }
 
 
@@ -627,8 +2079,10 @@ function closeSettings() {
         'hidden'
     )
 
+
     selectedBotId =
         null
+
 }
 
 
@@ -687,6 +2141,7 @@ document.getElementById(
 
             password:
                 proxyPassword.value
+
         }
 
     }
@@ -713,14 +2168,15 @@ document.getElementById(
         }
 
 
-        // Remplace le bot dans le tableau
         const index =
             bots.findIndex(
                 b => b.id === bot.id
             )
 
 
-        if (index !== -1) {
+        if (
+            index !== -1
+        ) {
 
             bots[index] =
                 result.bot ||
@@ -743,7 +2199,9 @@ document.getElementById(
         alert(
             'Impossible de sauvegarder les paramètres.'
         )
+
     }
+
 }
 
 
@@ -777,6 +2235,7 @@ function openDeleteConfirm(id) {
     deleteModal.classList.remove(
         'hidden'
     )
+
 }
 
 
@@ -793,6 +2252,7 @@ function closeDeleteConfirm() {
 
     botToDeleteId =
         null
+
 }
 
 
@@ -810,7 +2270,9 @@ cancelDelete.onclick =
 
 confirmDelete.onclick = async () => {
 
-    if (!botToDeleteId) {
+    if (
+        !botToDeleteId
+    ) {
 
         return
 
@@ -859,7 +2321,6 @@ confirmDelete.onclick = async () => {
         }
 
 
-        // Supprime le bot du tableau local
         bots =
             bots.filter(
                 bot =>
@@ -867,7 +2328,6 @@ confirmDelete.onclick = async () => {
             )
 
 
-        // Supprime également son état
         delete states[id]
 
 
@@ -883,7 +2343,9 @@ confirmDelete.onclick = async () => {
         alert(
             'Impossible de supprimer le bot.'
         )
+
     }
+
 }
 
 
@@ -944,7 +2406,9 @@ async function startBot(id) {
         alert(
             'Impossible de démarrer le bot.'
         )
+
     }
+
 }
 
 
@@ -953,7 +2417,7 @@ window.startBot =
 
 
 // =======================================
-// ARRÊTER BOT
+// ARRETER BOT
 // =======================================
 
 async function stopBot(id) {
@@ -988,7 +2452,9 @@ async function stopBot(id) {
         alert(
             'Impossible d’arrêter le bot.'
         )
+
     }
+
 }
 
 
@@ -997,82 +2463,269 @@ window.stopBot =
 
 
 // =======================================
-// LANCER TOUS
+// LANCER / ARRETER TOUS
 // =======================================
 
-document.getElementById(
-    'startAll'
-).onclick = async () => {
-
-    try {
-
-        const result =
-            await window.electronAPI.startAll()
+const toggleAllBots =
+    document.getElementById(
+        'toggleAllBots'
+    )
 
 
-        if (
-            result &&
-            !result.success
-        ) {
+if (toggleAllBots) {
+
+    toggleAllBots.onclick = async () => {
+
+        const hasRunningBot =
+            bots.some(
+                bot => {
+
+                    const state =
+                        states[bot.id]
+
+
+                    return (
+                        state &&
+                        (
+                            state.status === 'connected' ||
+                            state.status === 'connecting' ||
+                            state.status === 'waiting' ||
+                            state.status === 'reconnecting'
+                        )
+                    )
+
+                }
+            )
+
+
+        try {
+
+            let result
+
+
+            if (
+                hasRunningBot
+            ) {
+
+                result =
+                    await window.electronAPI.stopAll()
+
+            } else {
+
+                result =
+                    await window.electronAPI.startAll()
+
+            }
+
+
+            if (
+                result &&
+                !result.success
+            ) {
+
+                alert(
+                    result.error ||
+                    (
+                        hasRunningBot
+                            ? 'Impossible d’arrêter les bots.'
+                            : 'Impossible de lancer les bots.'
+                    )
+                )
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                'Erreur action sur tous les bots :',
+                error
+            )
+
 
             alert(
-                result.error ||
-                'Impossible de lancer les bots.'
+                hasRunningBot
+                    ? 'Impossible d’arrêter les bots.'
+                    : 'Impossible de lancer les bots.'
             )
 
         }
 
-    } catch (error) {
 
-        console.error(
-            'Erreur lancement de tous les bots :',
-            error
-        )
+        updateToggleAllButton()
 
-        alert(
-            'Impossible de lancer les bots.'
-        )
     }
+
 }
 
 
 // =======================================
-// ARRÊTER TOUS
+// LOGS
 // =======================================
+//
+// Les logs Minecraft restent dans la
+// console développeur.
+//
+// L'onglet Logs est réservé aux
+// mises à jour de Gamster Bot.
+//
 
-document.getElementById(
-    'stopAll'
-).onclick = async () => {
+function renderLogs() {
 
-    try {
+    if (!logsContainer) {
 
-        const result =
-            await window.electronAPI.stopAll()
+        return
 
-
-        if (
-            result &&
-            !result.success
-        ) {
-
-            alert(
-                result.error ||
-                'Impossible d’arrêter les bots.'
-            )
-
-        }
-
-    } catch (error) {
-
-        console.error(
-            'Erreur arrêt de tous les bots :',
-            error
-        )
-
-        alert(
-            'Impossible d’arrêter les bots.'
-        )
     }
+
+
+    logsContainer.innerHTML = `
+
+        <div class="update-log-card">
+
+            <div class="update-log-header">
+
+                <div class="update-log-icon">
+                    ✨
+                </div>
+
+                <div>
+
+                    <h3>
+                        Gamster Bot 1.0.0
+                    </h3>
+
+                    <span>
+                        Première version publique
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="update-log-content">
+
+                <p>
+                    🎉 Première version publique de
+                    <strong>Gamster Bot</strong> !
+                </p>
+
+
+                <h4>
+                    🤖 Bots
+                </h4>
+
+                <ul>
+
+                    <li>
+                        Ajout, modification et suppression des bots
+                    </li>
+
+                    <li>
+                        Démarrage / arrêt individuel ou global
+                    </li>
+
+                    <li>
+                        Reconnexion automatique
+                    </li>
+
+                    <li>
+                        Sauvegarde des configurations
+                    </li>
+
+                </ul>
+
+
+                <h4>
+                    ⏱️ Connexions
+                </h4>
+
+                <ul>
+
+                    <li>
+                        Ajout d'une latence entre chaque connexion
+                    </li>
+
+                    <li>
+                        Meilleure stabilité avec plusieurs bots
+                    </li>
+
+                </ul>
+
+
+                <h4>
+                    👤 Comptes hors ligne
+                </h4>
+
+                <ul>
+
+                    <li>
+                        Fonctionnalité actuellement
+                        <strong>en maintenance</strong>
+                    </li>
+
+                    <li>
+                        Améliorations prévues prochainement
+                    </li>
+
+                </ul>
+
+
+                <h4>
+                    🔄 Mises à jour
+                </h4>
+
+                <ul>
+
+                    <li>
+                        Détection et téléchargement automatique
+                    </li>
+
+                    <li>
+                        Installation directement depuis l'application
+                    </li>
+
+                    <li>
+                        Historique des nouveautés dans
+                        <strong>Logs</strong>
+                    </li>
+
+                </ul>
+
+
+                <h4>
+                    🎨 Interface
+                </h4>
+
+                <ul>
+
+                    <li>
+                        Nouvelle interface Gamster Bot
+                    </li>
+
+                    <li>
+                        Gestion simplifiée des bots
+                    </li>
+
+                    <li>
+                        Améliorations générales de stabilité
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+            <div class="update-log-footer">
+
+                📅 7 septembre 2026
+
+            </div>
+
+        </div>
+
+    `
+
 }
 
 
@@ -1083,7 +2736,10 @@ document.getElementById(
 window.electronAPI.onBotUpdate(
     data => {
 
-        if (!data || !data.id) {
+        if (
+            !data ||
+            !data.id
+        ) {
 
             return
 
@@ -1096,17 +2752,110 @@ window.electronAPI.onBotUpdate(
                 data.status,
 
             startTime:
-                data.startTime
+                data.startTime,
+
+            reconnectSeconds:
+                data.reconnectSeconds
+
         }
 
 
-        render()
+        // ===================================
+        // NOTIFICATION
+        // ===================================
+
+        if (
+            data.status === 'waiting'
+        ) {
+
+            showConnectionNotification(
+                data
+            )
+
+        } else {
+
+            hideConnectionNotification()
+
+        }
+
+
+        // ===================================
+        // CHERCHER LA CARTE DU BOT
+        // ===================================
+
+        const botCard =
+            document.querySelector(
+                `[data-bot-id="${data.id}"]`
+            )
+
+
+        // ===================================
+        // SI LA CARTE N'EXISTE PAS
+        // ON FAIT UN RENDER COMPLET
+        // ===================================
+
+        if (!botCard) {
+
+            render()
+
+            return
+
+        }
+
+
+        // ===================================
+        // METTRE A JOUR UNIQUEMENT LE STATUT
+        // ===================================
+
+        const statusElement =
+            botCard.querySelector(
+                '.status'
+            )
+
+
+        if (statusElement) {
+
+            statusElement.textContent =
+                getStatus(
+                    data.status,
+                    data
+                )
+
+        }
+
+
+        // ===================================
+        // METTRE A JOUR UNIQUEMENT LE TEMPS
+        // ===================================
+
+        const timeElement =
+            botCard.querySelector(
+                '.time'
+            )
+
+
+        if (timeElement) {
+
+            timeElement.textContent =
+                getTime(
+                    data
+                )
+
+        }
+
+
+        // ===================================
+        // METTRE A JOUR LE BOUTON GLOBAL
+        // ===================================
+
+        updateToggleAllButton()
+
     }
 )
 
 
 // =======================================
-// LOG
+// LOGS TECHNIQUES DES BOTS
 // =======================================
 
 window.electronAPI.onBotLog(
@@ -1122,6 +2871,7 @@ window.electronAPI.onBotLog(
         console.log(
             `[BOT ${data.id}] ${data.message}`
         )
+
     }
 )
 
@@ -1143,11 +2893,16 @@ function escapeHtml(text) {
 
 
     return div.innerHTML
+
 }
 
 
 // =======================================
 // DEMARRAGE
 // =======================================
+
+showBotsPage()
+
+loadProfile()
 
 loadBots()

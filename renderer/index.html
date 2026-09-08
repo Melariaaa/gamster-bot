@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="fr">
 
 <head>
@@ -24,10 +23,6 @@
 <body>
 
 
-<!-- ================================= -->
-<!-- NEIGE EN ARRIÈRE-PLAN -->
-<!-- ================================= -->
-
 <div
     class="snow-background"
     aria-hidden="true"
@@ -42,9 +37,9 @@
 </div>
 
 
-<!-- ================================= -->
-<!-- ÉCRAN LICENCE -->
-<!-- ================================= -->
+<!-- =======================================
+     ECRAN LICENCE
+======================================= -->
 
 <div
     id="licenseScreen"
@@ -94,15 +89,14 @@
 </div>
 
 
-<!-- ================================= -->
-<!-- HEADER -->
-<!-- ================================= -->
+<!-- =======================================
+     BARRE DU HAUT
+======================================= -->
 
 <header class="topbar">
 
-    <!-- ================================= -->
-    <!-- LOGO + NOM -->
-    <!-- ================================= -->
+
+    <!-- MARQUE -->
 
     <div class="brand">
 
@@ -125,24 +119,23 @@
     </div>
 
 
-    <!-- ================================= -->
-    <!-- SÉPARATEUR -->
-    <!-- ================================= -->
-
     <div class="topbar-separator"></div>
 
 
-    <!-- ================================= -->
-    <!-- CRÉATEUR -->
-    <!-- ================================= -->
+    <!-- PROFIL -->
 
-    <div class="creator">
+    <div
+        id="profileButton"
+        class="creator profile-button"
+        title="Mon profil"
+    >
 
         <div class="creator-avatar">
 
             <img
+                id="profileAvatar"
                 src="assets/melaria-head.png"
-                alt="Melaria"
+                alt="Profil"
             >
 
         </div>
@@ -153,7 +146,10 @@
                 By
             </span>
 
-            <span class="creator-name">
+            <span
+                id="profileUsername"
+                class="creator-name"
+            >
                 Melaria
             </span>
 
@@ -162,18 +158,98 @@
     </div>
 
 
-    <!-- ================================= -->
-    <!-- BOUTONS -->
-    <!-- ================================= -->
+    <!-- ===================================
+         BOUTON BOTS
+    =================================== -->
 
-    <div class="header-buttons">
+    <button
+        id="botsTab"
+        class="topbar-bots-button active"
+        type="button"
+        title="Retourner aux bots"
+    >
+
+        <span class="bots-button-icon">
+            ◈
+        </span>
+
+        <span class="bots-button-text">
+            Bots
+        </span>
+
+    </button>
+
+
+    <!-- ===================================
+         BOUTON COMPTES HORS LIGNE
+    =================================== -->
+
+    <button
+        id="offlineAccountsTab"
+        class="topbar-bots-button"
+        type="button"
+        title="Comptes hors ligne"
+    >
+
+        <span class="bots-button-icon">
+            👤
+        </span>
+
+        <span class="bots-button-text">
+            Hors ligne
+        </span>
+
+    </button>
+
+
+    <!-- ===================================
+         BOUTON LOGS
+    =================================== -->
+
+    <button
+        id="logsTab"
+        class="topbar-logs-button"
+        type="button"
+        title="Ouvrir les mises à jour"
+    >
+
+        <span class="logs-button-icon">
+
+            <span class="logs-line"></span>
+
+            <span class="logs-line"></span>
+
+            <span class="logs-line"></span>
+
+        </span>
+
+        <span class="logs-button-text">
+            Logs
+        </span>
+
+        <span class="logs-button-dot"></span>
+
+    </button>
+
+
+    <!-- BOUTONS CACHES -->
+
+    <div
+        class="header-buttons"
+        style="display: none !important;"
+    >
 
         <button
             id="startAll"
             class="btn success topbar-button"
         >
-            <span class="button-icon">▶</span>
+
+            <span class="button-icon">
+                ▶
+            </span>
+
             Lancer tout
+
         </button>
 
 
@@ -181,8 +257,13 @@
             id="stopAll"
             class="btn danger topbar-button"
         >
-            <span class="button-icon">■</span>
+
+            <span class="button-icon">
+                ■
+            </span>
+
             Arrêter tout
+
         </button>
 
     </div>
@@ -190,60 +271,472 @@
 </header>
 
 
-<!-- ================================= -->
-<!-- CONTENU PRINCIPAL -->
-<!-- ================================= -->
+<!-- =======================================
+     CONTENU PRINCIPAL
+======================================= -->
 
 <main>
 
 
-    <!-- ================================= -->
-    <!-- MES BOTS -->
-    <!-- ================================= -->
+    <!-- ===================================
+         PAGE BOTS
+    =================================== -->
 
-    <div class="top-bar">
+    <section
+        id="botsPage"
+        class="page-section active"
+    >
 
-        <div>
+        <div class="top-bar">
 
-            <h2>
-                Mes bots
-            </h2>
+            <div>
 
-            <span id="botCount">
-                0 bots
-            </span>
+                <h2>
+                    Mes bots
+                </h2>
+
+                <span id="botCount">
+                    0 bots
+                </span>
+
+            </div>
+
+
+            <div style="
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-end !important;
+                justify-content: flex-start !important;
+                gap: 8px !important;
+            ">
+
+                <button
+                    id="addBot"
+                    class="btn primary"
+                >
+                    ＋ Ajouter un bot
+                </button>
+
+
+                <button
+                    id="toggleAllBots"
+                    class="btn toggle-all-button"
+                    type="button"
+                >
+
+                    <span id="toggleAllIcon">
+                        ▶
+                    </span>
+
+                    <span id="toggleAllText">
+                        Lancer tout
+                    </span>
+
+                </button>
+
+            </div>
 
         </div>
 
 
-        <button
-            id="addBot"
-            class="btn primary"
-        >
-            ＋ Ajouter un bot
-        </button>
+        <div
+            id="botList"
+            class="bot-list"
+        ></div>
 
-    </div>
+    </section>
 
 
-    <!-- ================================= -->
-    <!-- LISTE DES BOTS -->
-    <!-- ================================= -->
+    <!-- ===================================
+         PAGE COMPTES HORS LIGNE
+    =================================== -->
 
-    <div
-        id="botList"
-        class="bot-list"
+    <section
+        id="offlineAccountsPage"
+        class="page-section"
     >
 
-    </div>
+        <div class="top-bar">
 
+            <div>
+
+                <h2>
+                    Comptes hors ligne
+                </h2>
+
+                <span>
+                    Créer un compte sur le serveur
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="bot-list"
+            style="margin-top: 20px;"
+        >
+
+            <div
+                class="bot-card"
+                style="max-width: 600px;"
+            >
+
+                <div class="bot-header">
+
+                    <div class="bot-name">
+                        👤 Créer un compte
+                    </div>
+
+                </div>
+
+
+                <!-- ===================================
+                     PSEUDO
+                =================================== -->
+
+                <div
+                    style="
+                        margin-top: 20px;
+                    "
+                >
+
+                    <label>
+                        Pseudo Minecraft
+                    </label>
+
+                    <input
+                        id="offlineUsername"
+                        type="text"
+                        placeholder="MonBot"
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <!-- ===================================
+                     MOT DE PASSE
+                =================================== -->
+
+                <div
+                    style="
+                        margin-top: 15px;
+                    "
+                >
+
+                    <label>
+                        Mot de passe serveur
+                    </label>
+
+                    <input
+                        id="offlinePassword"
+                        type="password"
+                        placeholder="Mot de passe"
+                        autocomplete="new-password"
+                    >
+
+                </div>
+
+
+                <!-- ===================================
+                     CONFIRMATION
+                =================================== -->
+
+                <div
+                    style="
+                        margin-top: 15px;
+                    "
+                >
+
+                    <label>
+                        Confirmation du mot de passe
+                    </label>
+
+                    <input
+                        id="offlinePasswordConfirm"
+                        type="password"
+                        placeholder="Confirmer le mot de passe"
+                        autocomplete="new-password"
+                    >
+
+                </div>
+
+
+                <!-- ===================================
+                     PROXY SOCKS5 - HORS LIGNE
+                =================================== -->
+
+                <div
+                    style="
+                        margin-top: 25px;
+                        padding-top: 20px;
+                        border-top: 1px solid rgba(255,255,255,0.08);
+                    "
+                >
+
+                    <h3
+                        style="
+                            margin: 0 0 15px 0;
+                        "
+                    >
+                        🌐 Proxy SOCKS5
+                    </h3>
+
+
+                    <!-- ACTIVATION PROXY -->
+
+                    <label class="switch-line">
+
+                        <span>
+                            Utiliser un proxy SOCKS5
+                        </span>
+
+                        <input
+                            id="offlineProxyEnabled"
+                            type="checkbox"
+                        >
+
+                    </label>
+
+
+                    <!-- CHAMPS PROXY -->
+
+                    <div
+                        id="offlineProxyFields"
+                        style="
+                            display: none;
+                            margin-top: 15px;
+                        "
+                    >
+
+                        <!-- ADRESSE -->
+
+                        <div
+                            style="
+                                margin-top: 15px;
+                            "
+                        >
+
+                            <label>
+                                Adresse du proxy
+                            </label>
+
+                            <input
+                                id="offlineProxyHost"
+                                type="text"
+                                placeholder="smart.eu-fra.liquidproxy.net"
+                                autocomplete="off"
+                            >
+
+                        </div>
+
+
+                        <!-- PORT -->
+
+                        <div
+                            style="
+                                margin-top: 15px;
+                            "
+                        >
+
+                            <label>
+                                Port
+                            </label>
+
+                            <input
+                                id="offlineProxyPort"
+                                type="number"
+                                min="1"
+                                max="65535"
+                                placeholder="1080"
+                            >
+
+                        </div>
+
+
+                        <!-- UTILISATEUR -->
+
+                        <div
+                            style="
+                                margin-top: 15px;
+                            "
+                        >
+
+                            <label>
+                                Nom d'utilisateur proxy
+                            </label>
+
+                            <input
+                                id="offlineProxyUsername"
+                                type="text"
+                                placeholder="Utilisateur"
+                                autocomplete="off"
+                            >
+
+                        </div>
+
+
+                        <!-- MOT DE PASSE -->
+
+                        <div
+                            style="
+                                margin-top: 15px;
+                            "
+                        >
+
+                            <label>
+                                Mot de passe proxy
+                            </label>
+
+                            <input
+                                id="offlineProxyPassword"
+                                type="password"
+                                placeholder="Mot de passe proxy"
+                                autocomplete="new-password"
+                            >
+
+                        </div>
+
+
+                        <!-- INFORMATION -->
+
+                        <div
+                            class="proxy-info"
+                            style="
+                                margin-top: 15px;
+                            "
+                        >
+
+                            🔒 Les informations du proxy
+                            sont utilisées uniquement
+                            pour la connexion temporaire
+                            de création du compte.
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ===================================
+                     INFORMATION REGISTER
+                =================================== -->
+
+                <div
+                    class="proxy-info"
+                    style="
+                        margin-top: 18px;
+                    "
+                >
+
+                    👤 Le compte sera créé
+                    automatiquement sur le serveur
+                    avec la commande
+                    <strong>
+                        /register
+                    </strong>.
+
+                </div>
+
+
+                <!-- ===================================
+                     BOUTON EXECUTER
+                =================================== -->
+
+                <div
+                    class="modal-buttons"
+                    style="
+                        margin-top: 20px;
+                    "
+                >
+
+                    <button
+                        id="executeOfflineAccount"
+                        class="btn primary"
+                        type="button"
+                    >
+                        ▶ Exécuter
+                    </button>
+
+                </div>
+
+
+                <!-- ===================================
+                     RESULTAT
+                =================================== -->
+
+                <div
+                    id="offlineAccountResult"
+                    class="license-error hidden"
+                    style="
+                        margin-top: 15px;
+                    "
+                ></div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ===================================
+         PAGE LOGS
+    =================================== -->
+
+    <section
+        id="logsPage"
+        class="page-section"
+    >
+
+        <div class="logs-header">
+
+            <div>
+
+                <h2>
+                    Logs
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="logsContainer"
+            class="logs-container"
+        >
+
+            <div class="logs-empty">
+
+                <div class="logs-empty-icon">
+                    📋
+                </div>
+
+                <h3>
+                    Aucune mise à jour
+                </h3>
+
+                <p>
+                    Les mises à jour de Gamster Bot
+                    apparaîtront ici.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
 
 </main>
 
 
-<!-- ================================= -->
-<!-- AJOUT BOT -->
-<!-- ================================= -->
+<!-- =======================================
+     MODAL AJOUT BOT
+======================================= -->
 
 <div
     id="modal"
@@ -282,7 +775,6 @@
             Pseudo Minecraft
         </label>
 
-
         <input
             id="username"
             type="text"
@@ -294,7 +786,6 @@
             Mot de passe
         </label>
 
-
         <input
             id="password"
             type="password"
@@ -304,14 +795,12 @@
 
         <div class="modal-buttons">
 
-
             <button
                 id="cancel"
                 class="btn"
             >
                 Annuler
             </button>
-
 
             <button
                 id="save"
@@ -320,18 +809,16 @@
                 Ajouter
             </button>
 
-
         </div>
-
 
     </div>
 
 </div>
 
 
-<!-- ================================= -->
-<!-- PARAMETRES BOT -->
-<!-- ================================= -->
+<!-- =======================================
+     MODAL PARAMETRES
+======================================= -->
 
 <div
     id="settingsModal"
@@ -389,7 +876,6 @@
             Adresse du proxy
         </label>
 
-
         <input
             id="proxyHost"
             type="text"
@@ -400,7 +886,6 @@
         <label>
             Port
         </label>
-
 
         <input
             id="proxyPort"
@@ -413,7 +898,6 @@
             Nom d'utilisateur proxy
         </label>
 
-
         <input
             id="proxyUsername"
             type="text"
@@ -425,11 +909,10 @@
             Mot de passe proxy
         </label>
 
-
         <input
             id="proxyPassword"
             type="password"
-            placeholder="Mot de passe"
+            placeholder="Mot de passe proxy"
         >
 
 
@@ -444,14 +927,12 @@
 
         <div class="modal-buttons">
 
-
             <button
                 id="cancelSettings"
                 class="btn"
             >
                 Annuler
             </button>
-
 
             <button
                 id="saveSettings"
@@ -460,18 +941,16 @@
                 Sauvegarder
             </button>
 
-
         </div>
-
 
     </div>
 
 </div>
 
 
-<!-- ================================= -->
-<!-- CONFIRMATION SUPPRESSION -->
-<!-- ================================= -->
+<!-- =======================================
+     MODAL SUPPRESSION
+======================================= -->
 
 <div
     id="deleteModal"
@@ -508,8 +987,9 @@
         </p>
 
 
-        <div class="modal-buttons delete-buttons">
-
+        <div
+            class="modal-buttons delete-buttons"
+        >
 
             <button
                 id="cancelDelete"
@@ -518,7 +998,6 @@
                 Annuler
             </button>
 
-
             <button
                 id="confirmDelete"
                 class="btn danger delete-confirm"
@@ -526,18 +1005,16 @@
                 🗑 Supprimer
             </button>
 
-
         </div>
-
 
     </div>
 
 </div>
 
 
-<!-- ================================= -->
-<!-- NOTIFICATION MISE À JOUR -->
-<!-- ================================= -->
+<!-- =======================================
+     NOTIFICATION MISE A JOUR
+======================================= -->
 
 <div
     id="updateNotification"
@@ -563,7 +1040,8 @@
             id="updateMessage"
             class="update-message"
         >
-            Une nouvelle version de Gamster Bot est disponible.
+            Une nouvelle version de Gamster Bot
+            est disponible.
         </div>
 
 
@@ -616,9 +1094,9 @@
 </div>
 
 
-<!-- ================================= -->
-<!-- SCRIPTS -->
-<!-- ================================= -->
+<!-- =======================================
+     SCRIPTS
+======================================= -->
 
 <script src="license.js"></script>
 

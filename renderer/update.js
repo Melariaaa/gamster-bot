@@ -1,3 +1,7 @@
+// =========================================
+// ELEMENTS MISE A JOUR
+// =========================================
+
 const updateNotification =
     document.getElementById(
         'updateNotification'
@@ -39,6 +43,287 @@ const updateLater =
     )
 
 
+// =========================================
+// NOTES DES VERSIONS
+// =========================================
+//
+// C'EST ICI QUE TU ECRIS TES MESSAGES.
+//
+// Pour chaque nouvelle version,
+// ajoute une nouvelle entrée.
+//
+// Exemple :
+// '1.1.0': {
+//     title: '🚀 Nouvelle version',
+//     message: 'Voici les nouveautés...',
+//     changes: [
+//         'Nouvelle fonctionnalité',
+//         'Correction de bugs'
+//     ]
+// }
+
+const UPDATE_NOTES = {
+
+    '1.0.0': {
+
+        title:
+            '🎉 Première version publique',
+
+        message:
+            'Bienvenue sur Gamster Bot !',
+
+        changes: [
+
+            'Gestion des bots Minecraft',
+
+            'Reconnexion automatique',
+
+            'Gestion des comptes hors ligne',
+
+            'Support des proxies SOCKS5',
+
+            'Système de licence'
+
+        ]
+
+    },
+
+
+    // =====================================
+    // EXEMPLE POUR LA PROCHAINE VERSION
+    // =====================================
+
+    /*
+    '1.1.0': {
+
+        title:
+            '🚀 Nouvelle mise à jour',
+
+        message:
+            'Gamster Bot reçoit plusieurs améliorations.',
+
+        changes: [
+
+            'Nouvelle fonctionnalité',
+
+            'Correction de plusieurs bugs',
+
+            'Amélioration de l’interface'
+
+        ]
+
+    }
+    */
+
+}
+
+
+// =========================================
+// AFFICHER LES LOGS DE MISE A JOUR
+// =========================================
+
+function renderUpdateLogs() {
+
+    const container =
+        document.getElementById(
+            'logsContainer'
+        )
+
+
+    if (!container) {
+        return
+    }
+
+
+    const versions =
+        Object.keys(
+            UPDATE_NOTES
+        ).reverse()
+
+
+    // =====================================
+    // AUCUNE NOTE
+    // =====================================
+
+    if (versions.length === 0) {
+
+        container.innerHTML = `
+
+            <div class="logs-empty">
+
+                <div class="logs-empty-icon">
+                    📋
+                </div>
+
+                <h3>
+                    Aucune mise à jour
+                </h3>
+
+                <p>
+                    Les mises à jour de Gamster Bot
+                    apparaîtront ici.
+                </p>
+
+            </div>
+
+        `
+
+        return
+
+    }
+
+
+    // =====================================
+    // CREATION DES LOGS
+    // =====================================
+
+    container.innerHTML = ''
+
+
+    versions.forEach(
+        (version) => {
+
+            const update =
+                UPDATE_NOTES[version]
+
+
+            const card =
+                document.createElement(
+                    'div'
+                )
+
+
+            card.className =
+                'update-log-card'
+
+
+            // =================================
+            // TITRE
+            // =================================
+
+            const title =
+                document.createElement(
+                    'h3'
+                )
+
+
+            title.textContent =
+                update.title
+
+
+            // =================================
+            // VERSION
+            // =================================
+
+            const versionElement =
+                document.createElement(
+                    'span'
+                )
+
+
+            versionElement.className =
+                'update-log-version'
+
+
+            versionElement.textContent =
+                `Version ${version}`
+
+
+            // =================================
+            // MESSAGE
+            // =================================
+
+            const message =
+                document.createElement(
+                    'p'
+                )
+
+
+            message.className =
+                'update-log-message'
+
+
+            message.textContent =
+                update.message
+
+
+            // =================================
+            // LISTE DES CHANGEMENTS
+            // =================================
+
+            const list =
+                document.createElement(
+                    'ul'
+                )
+
+
+            list.className =
+                'update-log-changes'
+
+
+            update.changes.forEach(
+                (change) => {
+
+                    const item =
+                        document.createElement(
+                            'li'
+                        )
+
+
+                    item.textContent =
+                        change
+
+
+                    list.appendChild(
+                        item
+                    )
+
+                }
+            )
+
+
+            // =================================
+            // ASSEMBLAGE
+            // =================================
+
+            card.appendChild(
+                versionElement
+            )
+
+            card.appendChild(
+                title
+            )
+
+            card.appendChild(
+                message
+            )
+
+            card.appendChild(
+                list
+            )
+
+
+            container.appendChild(
+                card
+            )
+
+        }
+    )
+
+}
+
+
+// =========================================
+// AFFICHAGE INITIAL
+// =========================================
+
+renderUpdateLogs()
+
+
+// =========================================
+// NOTIFICATION
+// =========================================
+
 function showUpdateNotification() {
 
     updateNotification.classList.remove(
@@ -56,6 +341,10 @@ function hideUpdateNotification() {
 
 }
 
+
+// =========================================
+// MISE A JOUR DISPONIBLE
+// =========================================
 
 function showUpdateAvailable(version) {
 
@@ -81,6 +370,10 @@ function showUpdateAvailable(version) {
 
 }
 
+
+// =========================================
+// TELECHARGEMENT
+// =========================================
 
 function showUpdateProgress(percent) {
 
@@ -122,6 +415,10 @@ function showUpdateProgress(percent) {
 }
 
 
+// =========================================
+// MISE A JOUR TELECHARGEE
+// =========================================
+
 function showUpdateDownloaded(version) {
 
     updateTitle.textContent =
@@ -144,8 +441,19 @@ function showUpdateDownloaded(version) {
 
     showUpdateNotification()
 
+
+    // =====================================
+    // ACTUALISER LES LOGS
+    // =====================================
+
+    renderUpdateLogs()
+
 }
 
+
+// =========================================
+// ERREUR
+// =========================================
 
 function showUpdateError(error) {
 
@@ -178,7 +486,7 @@ function showUpdateError(error) {
 
 
 // =========================================
-// ÉVÉNEMENTS DE MISE À JOUR
+// EVENEMENTS DE MISE A JOUR
 // =========================================
 
 window.electronAPI.onUpdateAvailable(
@@ -299,6 +607,7 @@ updateInstall.onclick =
 
 updateLater.onclick =
     () => {
-        hideUpdateNotification()
-    }
 
+        hideUpdateNotification()
+
+    }

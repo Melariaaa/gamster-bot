@@ -7,7 +7,7 @@ const SUPABASE_URL =
 
 
 const SUPABASE_ANON_KEY =
-    'COLLE_TA_CLE_PUBLISHABLE_ICI'
+    'sb_publishable_LGZZwftflZbvuM7NlO28fQ_MIcHIP_W'
 
 
 // ==========================================
